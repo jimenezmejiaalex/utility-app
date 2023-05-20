@@ -24,7 +24,9 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  Budget   Budget? @relation(fields: [budgetId], references: [id])
+  budgetId String?
 
   @@unique([provider, providerAccountId])
 }
@@ -38,14 +40,14 @@ model Session {
 }
 
 model User {
-  id            String             @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String?
-  email         String?            @unique
+  email         String?       @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Reminders     UsersOnReminders[]
+  bankAccount   BankAccount[]
 }
 
 model VerificationToken {
@@ -56,27 +58,57 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
-model Reminder {
-  id         String             @id @default(cuid())
-  name       String?
-  users      UsersOnReminders[]
-  assignedAt DateTime           @default(now())
-  assignedBy String
-  products   Product[]
+enum Currency {
+  USD
+  CRC
 }
 
-model UsersOnReminders {
-  reminder   Reminder @relation(fields: [reminderId], references: [id])
-  reminderId String // relation scalar field (used in the `@relation` attribute above)
-  user       User     @relation(fields: [userId], references: [id])
-  userId     String // relation scalar field (used in the `@relation` attribute above)
-
-  @@id([reminderId, userId])
+model BankAccount {
+  id        String   @id @default(cuid())
+  accountId Int      @unique @default(autoincrement())
+  name      String?
+  currency  Currency @default(USD)
+  amount    Decimal
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 }
 
-model Product {
-  id         String   @id @default(cuid())
-  name       String?
-  reminderId String
-  reminder   Reminder @relation(fields: [reminderId], references: [id], onDelete: Cascade)
+model Budget {
+  id         String               @id @default(cuid())
+  budgetId   Int                  @default(autoincrement())
+  name       String
+  amount     Decimal
+  durationId String
+  duration   Duration             @relation(fields: [durationId], references: [id])
+  accounts   Account[]
+  categories CategoriesOnBudget[]
+}
+
+model Category {
+  id         String               @id @default(cuid())
+  categoryId Int                  @default(autoincrement())
+  name       String
+  type       Type
+  budgets    CategoriesOnBudget[]
+}
+
+model CategoriesOnBudget {
+  budget     Budget   @relation(fields: [budgetId], references: [id])
+  budgetId   String // relation scalar field (used in the `@relation` attribute above)
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String // relation scalar field (used in the `@relation` attribute above)
+
+  @@id([budgetId, categoryId])
+}
+
+enum Type {
+  Income
+  Expense
+}
+
+model Duration {
+  id        String   @id @default(cuid())
+  createdAt DateTime
+  finishAt  DateTime
+  budgets   Budget[]
 }

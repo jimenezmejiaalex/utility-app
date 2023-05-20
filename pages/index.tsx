@@ -1,4 +1,3 @@
-import RemindersList from '@/components/ItemList'
 import LoadingComponent from '@/components/Loading'
 import { Item } from 'interfaces'
 import { useSession } from 'next-auth/react'
@@ -25,9 +24,7 @@ const IndexPage = () => {
 
     return (
         <>
-            <Layout title="Home | Next.js + TypeScript Example">
-                <RemindersList itemList={itemList} />
-            </Layout>
+            <Layout title="Home | Next.js + TypeScript Example"></Layout>
         </>
     )
 }

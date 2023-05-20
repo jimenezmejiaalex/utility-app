@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.332.0",
+    "@chakra-ui/icons": "^2.0.19",
     "@chakra-ui/react": "^2.6.1",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
@@ -20,6 +21,7 @@
     "i18next": "^22.4.15",
     "next": "latest",
     "next-auth": "^4.22.1",
+    "nextjs-progressbar": "^0.0.16",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.2.2",
