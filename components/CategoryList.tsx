@@ -1,4 +1,4 @@
-import { BankAccountItem } from '@/interfaces'
+import { CategoryItem } from '@/interfaces'
 import {
     IconButton,
     Table,
@@ -15,13 +15,13 @@ import Link from 'next/link'
 import React from 'react'
 import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
 
-type AccountListProps = {
-    accounts: Array<BankAccountItem>
+type CategoryListProps = {
+    categories: Array<CategoryItem>
     onDeleteAction: (id: number) => void
 }
 
-const AccountList: React.FC<AccountListProps> = ({
-    accounts,
+const CategoryList: React.FC<CategoryListProps> = ({
+    categories,
     onDeleteAction,
 }) => {
     const handleOnDelete = (id) => {
@@ -30,23 +30,23 @@ const AccountList: React.FC<AccountListProps> = ({
     return (
         <TableContainer>
             <Table variant="simple">
-                <TableCaption>List of accounts</TableCaption>
+                <TableCaption>List of categories</TableCaption>
                 <Thead>
                     <Tr>
                         <Th>Name</Th>
-                        <Th>Amount</Th>
+                        <Th>Type</Th>
                         <Th isNumeric>Action</Th>
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {accounts.map((account) => (
-                        <Tr key={account.accountId}>
-                            <Td>{account.name}</Td>
-                            <Td>{`${account.currency} ${account.amountNumber}`}</Td>
+                    {categories.map((category) => (
+                        <Tr key={category.categoryId}>
+                            <Td>{category.name}</Td>
+                            <Td>{category.type}</Td>
                             <Td isNumeric>
                                 <IconButton
                                     onClick={() =>
-                                        handleOnDelete(account.accountId)
+                                        handleOnDelete(category.categoryId)
                                     }
                                     variant="link"
                                     colorScheme="red"
@@ -54,11 +54,11 @@ const AccountList: React.FC<AccountListProps> = ({
                                     size="lg"
                                     icon={<AiOutlineDelete />}
                                 />
-                                <Link href={`/account/${account.accountId}`}>
+                                <Link href={`/category/${category.categoryId}`}>
                                     <IconButton
                                         variant="link"
                                         colorScheme="gray"
-                                        aria-label="Edit"
+                                        aria-label="Call Sage"
                                         size="lg"
                                         icon={<AiOutlineEdit />}
                                     />
@@ -70,8 +70,8 @@ const AccountList: React.FC<AccountListProps> = ({
                 <Tfoot>
                     <Tr>
                         <Th>Name</Th>
-                        <Th>Amount</Th>
-                        <Th isNumeric>edit</Th>
+                        <Th>Type</Th>
+                        <Th isNumeric>Action</Th>
                     </Tr>
                 </Tfoot>
             </Table>
@@ -79,4 +79,4 @@ const AccountList: React.FC<AccountListProps> = ({
     )
 }
 
-export default AccountList
+export default CategoryList

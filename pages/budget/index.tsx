@@ -1,30 +1,30 @@
-import AccountList from '@/components/AccountList'
+import CategoryList from '@/components/CategoryList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { BankAccountItem } from '@/interfaces'
-import { AccountService } from '@/services/AccountService'
+import { CategoryItem } from '@/interfaces'
+import { CategoryService } from '@/services/CategoryService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
-type AccountProps = {
-    accounts: Array<BankAccountItem>
+type CategoryProps = {
+    categories: Array<CategoryItem>
 }
 
-const Account: React.FC<AccountProps> = ({ accounts }) => {
+const Category: React.FC<CategoryProps> = ({ categories }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [accountsState, setAccountsState] = useState(accounts)
+    const [categoriesState, setCategoriesState] = useState(categories)
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
-        const response = await fetch(`/api/account/${id}`, {
+        const response = await fetch(`/api/category/${id}`, {
             method: 'DELETE',
         })
         const data = await response.json()
         console.log(data)
-        setAccountsState([
-            ...accountsState.filter((account) => account.accountId !== id),
+        setCategoriesState([
+            ...categoriesState.filter((account) => account.categoryId !== id),
         ])
         setIsLoading(false)
     }
@@ -32,10 +32,10 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
         return <LoadingComponent />
     }
     return (
-        <Layout title="Accounts">
-            <AccountList
+        <Layout title="Categories">
+            <CategoryList
                 onDeleteAction={onDeleteAction}
-                accounts={accountsState}
+                categories={categoriesState}
             />
             <Box
                 position="fixed"
@@ -43,7 +43,7 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
                 right={['16px', '14px']}
                 zIndex={1}
             >
-                <Link href="/account/add">
+                <Link href="/category/add">
                     <IconButton
                         variant="solid"
                         colorScheme="red"
@@ -58,22 +58,17 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AccountProps> = async (
+export const getServerSideProps: GetServerSideProps<CategoryProps> = async (
     ctx
 ) => {
-    const accountService = new AccountService()
-    const bankAccounts = await accountService.getBankAccounts()
-    const accounts: Array<BankAccountItem> = bankAccounts.map((account) => ({
-        name: account.name,
-        accountId: account.accountId,
-        currency: account.currency,
-        amountNumber: account.amount.toNumber(),
-    }))
+    const categoryService = new CategoryService()
+    const categories = await categoryService.getCategories()
+    console.log(categories)
     return {
         props: {
-            accounts,
+            categories,
         },
     }
 }
 
-export default Account
+export default Category

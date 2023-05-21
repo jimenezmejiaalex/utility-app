@@ -1,8 +1,8 @@
-import { BankAccountCreate } from '@/interfaces';
-import { AccountService } from '@/services/AccountService';
+import { BudgetInput } from '@/interfaces';
+import { BudgetService } from '@/services/BudgetService';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const accountService = new AccountService();
+const budgetService = new BudgetService();
 
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
@@ -11,8 +11,8 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
         switch (method) {
             case "POST":
                 {
-                    const newAccount: BankAccountCreate = JSON.parse(body);
-                    const accountResponse = await accountService.addBankAccount(newAccount);
+                    const newBudget: BudgetInput = JSON.parse(body);
+                    const accountResponse = await budgetService.addBudget(newBudget);
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
                 break;

@@ -1,14 +1,19 @@
+import CategoryForm from '@/components/CategoryForm'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { AccountFormData } from '@/interfaces'
+import { CategoryFormData } from '@/interfaces'
+import Login from '@/pages/login'
 import { Heading, Stack } from '@chakra-ui/layout'
+import { Type } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { useSession } from 'next-auth/react'
-import { useState } from 'react'
-import users from '../api/users'
-import Login from '../login'
+import React, { useState } from 'react'
 
-const addCategory = () => {
+type AddCategoryProps = {
+    types: Array<Type>
+}
+
+const addCategory: React.FC<AddCategoryProps> = ({ types }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
 
@@ -20,12 +25,12 @@ const addCategory = () => {
         return <Login />
     }
 
-    const handleOnSubmit = async (bankAccount: AccountFormData) => {
+    const handleOnSubmit = async (category: CategoryFormData) => {
         setIsLoading(true)
-        console.log(bankAccount)
-        const response = await fetch('/api/account', {
+        console.log(category)
+        const response = await fetch('/api/category', {
             method: 'POST',
-            body: JSON.stringify(bankAccount),
+            body: JSON.stringify(category),
         })
 
         const data = await response.json()
@@ -38,10 +43,9 @@ const addCategory = () => {
             <Layout title="Add Category">
                 <Stack spacing={6}>
                     <Heading m={4}>Add Category</Heading>
-                    <categoryForm
+                    <CategoryForm
                         isLoading={isLoading}
-                        users={users}
-                        currencies={currency}
+                        types={types}
                         onSubmit={handleOnSubmit}
                     />
                 </Stack>
@@ -50,9 +54,14 @@ const addCategory = () => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getServerSideProps: GetServerSideProps<AddCategoryProps> = async (
+    ctx
+) => {
+    const types = [Type.Expense, Type.Income]
     return {
-        props: {},
+        props: {
+            types,
+        },
     }
 }
 

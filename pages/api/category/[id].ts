@@ -1,8 +1,8 @@
-import { BankAccountCreate } from '@/interfaces';
-import { AccountService } from '@/services/AccountService';
+import { CategoryInput } from '@/interfaces';
+import { CategoryService } from '@/services/CategoryService';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const accountService = new AccountService();
+const categoryService = new CategoryService();
 
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
@@ -13,8 +13,8 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
             case "PATCH":
                 {
                     console.log(id);
-                    const newAccount: BankAccountCreate = JSON.parse(body);
-                    const accountResponse = await accountService.updateBankAccount(newAccount, parseInt(id.toString()));
+                    const newCategory: CategoryInput = JSON.parse(body);
+                    const accountResponse = await categoryService.updateCategory(newCategory, parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
                 break;
@@ -22,10 +22,11 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
             case "DELETE":
                 {
                     console.log(id);
-                    const accountResponse = await accountService.deleteBankAccount(parseInt(id.toString()));
+                    const accountResponse = await categoryService.deleteCategory(parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
                 break;
+
 
             default:
                 break;

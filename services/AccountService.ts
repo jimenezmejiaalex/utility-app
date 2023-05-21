@@ -26,6 +26,26 @@ export class AccountService {
         }
     }
 
+    async getAccountsByIds(ids: Array<number>): Promise<Array<{ id: string }>> {
+        try {
+            const response = await BankAccountDB.findMany({
+                select: {
+                    id: true,
+                },
+                where: {
+                    accountId: {
+                        in: ids
+                    }
+                }
+            });
+
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
     async updateBankAccount(bankAccount: BankAccountCreate, id: number): Promise<BankAccount> {
         try {
             const user = await this.userService.getUserByEmail(bankAccount.email);
@@ -39,6 +59,21 @@ export class AccountService {
                     currency: bankAccount.currency,
                     amount: bankAccount.amount,
                     userId: userId
+                }
+            });
+
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async deleteBankAccount(id: number): Promise<BankAccount> {
+        try {
+            const response = await BankAccountDB.delete({
+                where: {
+                    accountId: id
                 }
             });
 

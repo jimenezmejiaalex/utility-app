@@ -4,7 +4,7 @@
 //
 // import { User } from 'path/to/interfaces';
 
-import { BankAccount } from "@prisma/client"
+import { BankAccount, Category, Currency, Type } from "@prisma/client"
 
 export type User = {
   id: number
@@ -30,9 +30,42 @@ export type AccountFormData = {
   email: string
 }
 
+export type BankAccountType = Pick<BankAccount, "accountId" | "name">
+
+export type CategoryFormData = {
+  name: string | null
+  type: Type
+}
+
 interface BankAccountListItem extends BankAccount {
   amountNumber: number
 }
 
 export type BankAccountItem = Omit<BankAccountListItem, "id" | "userId" | "amount">
 
+export type CategoryItem = Omit<Category, "id">
+
+export type CategoryType = Pick<Category, "categoryId" | "name">
+
+export type SelectedItem = string | Currency | Type | Array<string>
+
+export type SelectOptions = {
+  label: string
+  value: string
+}
+
+export type SelectData = Array<SelectOptions>
+
+export type CategoryInput = Omit<Category, "id" | "categoryId">
+
+export type BudgetFormData = {
+  name: string
+  amount: number
+  startDate: string
+  endDate: string
+  accounts: Array<string>
+  categories: Array<string>
+  currency: Currency
+}
+
+export type BudgetInput = BudgetFormData

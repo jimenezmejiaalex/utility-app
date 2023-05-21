@@ -14,8 +14,7 @@ import {
 } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
 import React, { useState } from 'react'
-import SelectCurrency from './SelectCurrency'
-import SelectUser from './SelectUser'
+import SelectComponent from './SelectComponent'
 
 type BankAccountFormProps = {
     users: User[]
@@ -94,20 +93,32 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
                 </FormControl>
 
                 <FormControl mb={4}>
-                    <SelectUser
+                    <SelectComponent
+                        required
                         defaultValue={formData.email}
                         isLoading={isLoading}
                         onChange={handleUserChange}
-                        users={users}
+                        data={users.map((user) => ({
+                            label: user.name,
+                            value: user.email,
+                        }))}
+                        title="User"
+                        placeholder="Select User"
                     />
                 </FormControl>
 
                 <FormControl mb={4}>
-                    <SelectCurrency
+                    <SelectComponent
+                        required
                         defaultValue={formData.currency}
                         isLoading={isLoading}
                         onChange={handleCurrenciesChange}
-                        currencies={currencies}
+                        data={currencies.map((currency) => ({
+                            label: currency,
+                            value: currency,
+                        }))}
+                        title="Currency"
+                        placeholder="Select Currency"
                     />
                 </FormControl>
 

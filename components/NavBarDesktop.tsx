@@ -21,11 +21,11 @@ const NavBarDesktop: React.FC = () => {
                 <Link href="/" color="text" mx={2}>
                     {t('Home')}
                 </Link>
-                <Link href="/about" color="text" mx={2}>
-                    {t('About')}
+                <Link href="/account" color="text" mx={2}>
+                    {t('Accounts')}
                 </Link>
-                <Link href="/users" color="text" mx={2}>
-                    {t('Users List')}
+                <Link href="/category" color="text" mx={2}>
+                    {t('Categories')}
                 </Link>
                 <SignOutButton />
             </Flex>

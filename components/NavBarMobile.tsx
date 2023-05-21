@@ -60,22 +60,22 @@ const NavBarMobile: React.FC = () => {
                             {t('Home')}
                         </Link>
                         <Link
-                            href="/about"
+                            href="/account"
                             color="text"
                             py={2}
                             px={4}
                             _hover={{ bg: 'secondary', color: 'white' }}
                         >
-                            {t('About')}
+                            {t('Accounts')}
                         </Link>
                         <Link
-                            href="/users"
+                            href="/category"
                             color="text"
                             py={2}
                             px={4}
                             _hover={{ bg: 'secondary', color: 'white' }}
                         >
-                            {t('Users List')}
+                            {t('Categories')}
                         </Link>
                         <Box flex={1} />
                         <SignOutButton />

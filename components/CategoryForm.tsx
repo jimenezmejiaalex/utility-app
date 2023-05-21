@@ -1,4 +1,4 @@
-import { AccountFormData, User } from '@/interfaces'
+import { CategoryFormData } from '@/interfaces'
 import {
     Box,
     Button,
@@ -7,40 +7,34 @@ import {
     FormLabel,
     Input,
 } from '@chakra-ui/react'
-import { Currency } from '@prisma/client'
+import { Type } from '@prisma/client'
 import React, { useState } from 'react'
-import SelectUser from './SelectUser'
+import SelectComponent from './SelectComponent'
 
-type BankAccountFormProps = {
-    users: User[]
-    currencies: Currency[]
-    onSubmit: (bankAccount: AccountFormData) => void
+type CategoryFormProps = {
+    onSubmit: (category: CategoryFormData) => void
     isLoading: boolean
-    defaultData?: AccountFormData
+    defaultData?: CategoryFormData
+    types: Array<Type>
 }
 
-const CategoryForm: React.FC<BankAccountFormProps> = ({
-    users,
-    currencies,
+const CategoryForm: React.FC<CategoryFormProps> = ({
     onSubmit,
     isLoading,
     defaultData,
+    types,
 }) => {
-    const [formData, setFormData] = useState<AccountFormData>(
+    const [formData, setFormData] = useState<CategoryFormData>(
         defaultData || {
             name: '',
-            currency: '',
-            amount: 0,
-            email: '',
+            type: null,
         }
     )
 
-    console.log(formData)
-
-    const handleUserChange = (selectedUser: string) => {
+    const handleTypeChange = (selectedType: Type) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            email: selectedUser,
+            type: selectedType,
         }))
     }
 
@@ -65,6 +59,7 @@ const CategoryForm: React.FC<BankAccountFormProps> = ({
                 <FormControl mb={4}>
                     <FormLabel>Name</FormLabel>
                     <Input
+                        required
                         disabled={isLoading}
                         type="text"
                         name="name"
@@ -74,11 +69,17 @@ const CategoryForm: React.FC<BankAccountFormProps> = ({
                 </FormControl>
 
                 <FormControl mb={4}>
-                    <SelectUser
-                        defaultValue={formData.email}
+                    <SelectComponent
+                        required
+                        defaultValue={formData.type}
                         isLoading={isLoading}
-                        onChange={handleUserChange}
-                        users={users}
+                        onChange={handleTypeChange}
+                        data={types.map((type) => ({
+                            label: type,
+                            value: type,
+                        }))}
+                        title="Type"
+                        placeholder="Select Type"
                     />
                 </FormControl>
 
