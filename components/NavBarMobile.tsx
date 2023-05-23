@@ -21,7 +21,7 @@ const NavBarMobile: React.FC = () => {
     }
 
     return (
-        <Box bg="primary" color="text" p={4}>
+        <Box bg="primary" color="text" p={4} zIndex={100}>
             <Flex align="center" justify="space-between">
                 <IconButton
                     icon={isOpen ? <FiX /> : <FiMenu />}
@@ -60,22 +60,31 @@ const NavBarMobile: React.FC = () => {
                             {t('Home')}
                         </Link>
                         <Link
-                            href="/about"
+                            href="/budget"
                             color="text"
                             py={2}
                             px={4}
                             _hover={{ bg: 'secondary', color: 'white' }}
                         >
-                            {t('About')}
+                            {t('Budgets')}
                         </Link>
                         <Link
-                            href="/users"
+                            href="/account"
                             color="text"
                             py={2}
                             px={4}
                             _hover={{ bg: 'secondary', color: 'white' }}
                         >
-                            {t('Users List')}
+                            {t('Accounts')}
+                        </Link>
+                        <Link
+                            href="/category"
+                            color="text"
+                            py={2}
+                            px={4}
+                            _hover={{ bg: 'secondary', color: 'white' }}
+                        >
+                            {t('Categories')}
                         </Link>
                         <Box flex={1} />
                         <SignOutButton />

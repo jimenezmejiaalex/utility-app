@@ -21,6 +21,15 @@
     "paths": {
       "@/components/*": [
         "components/*"
+      ],
+      "@/interfaces": [
+        "interfaces/index"
+      ],
+      "@/pages/*": [
+        "pages/*"
+      ],
+      "@/services/*": [
+        "services/*"
       ]
     },
     "incremental": true
