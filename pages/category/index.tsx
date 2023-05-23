@@ -5,7 +5,7 @@ import { CategoryItem } from '@/interfaces'
 import { CategoryService } from '@/services/CategoryService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
-import { GetServerSideProps } from 'next/types'
+import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -58,9 +58,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<CategoryProps> = async (
-    ctx
-) => {
+export const getStaticProps: GetStaticProps = async (ctx) => {
     const categoryService = new CategoryService()
     const categories = await categoryService.getCategories()
     console.log(categories)

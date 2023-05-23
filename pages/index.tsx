@@ -1,18 +1,10 @@
+import SidebarWithHeader from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { Item } from 'interfaces'
 import { useSession } from 'next-auth/react'
-import Layout from '../components/Layout'
 import Login from './login'
 
 const IndexPage = () => {
     const { data: session, status } = useSession()
-
-    const itemList: Item[] = [
-        { id: '1', name: 'Item 1' },
-        { id: '2', name: 'Item 2' },
-        { id: '3', name: 'Item 3' },
-        // Agrega más elementos según sea necesario
-    ]
 
     if (status === 'loading') {
         return <LoadingComponent />
@@ -24,7 +16,9 @@ const IndexPage = () => {
 
     return (
         <>
-            <Layout title="Home | Next.js + TypeScript Example"></Layout>
+            <SidebarWithHeader title="Home Page">
+                <h1>Hello</h1>
+            </SidebarWithHeader>
         </>
     )
 }

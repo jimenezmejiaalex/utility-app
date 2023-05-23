@@ -8,7 +8,7 @@ import { BudgetService } from '@/services/BudgetService'
 import { CategoryService } from '@/services/CategoryService'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import { GetStaticPaths, GetStaticProps } from 'next'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
@@ -71,10 +71,19 @@ const Budget: React.FC<BudgetProps> = ({
     )
 }
 
-export const getServerSideProps: GetServerSideProps<BudgetProps> = async (
-    ctx
-) => {
-    const id = ctx.query?.id
+export const getStaticPaths: GetStaticPaths = async () => {
+    const budgetService = new BudgetService()
+    const budgets = await budgetService.getBudgets()
+    return {
+        paths: budgets.map((c) => ({
+            params: { id: c.budgetId.toString() },
+        })),
+        fallback: true,
+    }
+}
+
+export const getStaticProps: GetStaticProps = async (ctx) => {
+    const id = ctx.params?.id
 
     const budgetService = new BudgetService()
     const accountService = new AccountService()

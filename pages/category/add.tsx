@@ -5,7 +5,7 @@ import { CategoryFormData } from '@/interfaces'
 import Login from '@/pages/login'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Type } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 
@@ -54,9 +54,7 @@ const addCategory: React.FC<AddCategoryProps> = ({ types }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AddCategoryProps> = async (
-    ctx
-) => {
+export const getStaticProps: GetStaticProps = (ctx) => {
     const types = [Type.Expense, Type.Income]
     return {
         props: {
