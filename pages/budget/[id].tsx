@@ -1,26 +1,35 @@
-import CategoryForm from '@/components/CategoryForm'
+import BudgetForm from '@/components/BudgetForm'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { CategoryFormData } from '@/interfaces'
+import { BankAccountType, BudgetFormData, CategoryType } from '@/interfaces'
 import Login from '@/pages/login'
+import { AccountService } from '@/services/AccountService'
+import { BudgetService } from '@/services/BudgetService'
 import { CategoryService } from '@/services/CategoryService'
 import { Heading, Stack } from '@chakra-ui/layout'
-import { Type } from '@prisma/client'
+import { Currency } from '@prisma/client'
 import { GetServerSideProps } from 'next'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 
-type AddCategoryProps = {
-    types: Array<Type>
-    data: CategoryFormData
+type BudgetProps = {
+    accounts: Array<BankAccountType>
+    categories: Array<CategoryType>
+    currencies: Array<Currency>
+    budget: BudgetFormData
 }
 
-const addCategory: React.FC<AddCategoryProps> = ({ types, data }) => {
-    const router = useRouter()
-    const id = router.query?.id
+const Budget: React.FC<BudgetProps> = ({
+    accounts,
+    categories,
+    currencies,
+    budget,
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
+    const router = useRouter()
+    const id = router.query?.id
 
     if (status === 'loading') {
         return <LoadingComponent />
@@ -30,12 +39,12 @@ const addCategory: React.FC<AddCategoryProps> = ({ types, data }) => {
         return <Login />
     }
 
-    const handleOnSubmit = async (category: CategoryFormData) => {
+    const handleOnSubmit = async (budget: BudgetFormData) => {
         setIsLoading(true)
-        console.log(category)
-        const response = await fetch(`/api/category/${id}`, {
+        console.log(budget)
+        const response = await fetch(`/api/budget/${id}`, {
             method: 'PATCH',
-            body: JSON.stringify(category),
+            body: JSON.stringify(budget),
         })
 
         const data = await response.json()
@@ -45,13 +54,15 @@ const addCategory: React.FC<AddCategoryProps> = ({ types, data }) => {
 
     return (
         <>
-            <Layout title="Add Category">
+            <Layout title="Add Budget">
                 <Stack spacing={6}>
-                    <Heading m={4}>Add Category</Heading>
-                    <CategoryForm
-                        defaultData={data}
+                    <Heading m={4}>Edit Budget</Heading>
+                    <BudgetForm
+                        defaultData={budget}
                         isLoading={isLoading}
-                        types={types}
+                        categories={categories}
+                        accounts={accounts}
+                        currencies={currencies}
                         onSubmit={handleOnSubmit}
                     />
                 </Stack>
@@ -60,19 +71,68 @@ const addCategory: React.FC<AddCategoryProps> = ({ types, data }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AddCategoryProps> = async (
+export const getServerSideProps: GetServerSideProps<BudgetProps> = async (
     ctx
 ) => {
     const id = ctx.query?.id
+
+    const budgetService = new BudgetService()
+    const accountService = new AccountService()
     const categoryService = new CategoryService()
-    const types = [Type.Expense, Type.Income]
-    const category = await categoryService.getCategory(parseInt(id.toString()))
+    const accountList = await accountService.getBankAccounts()
+    const categoryList = await categoryService.getCategories()
+
+    const budgetObj = await budgetService.getBudgetById(parseInt(id.toString()))
+
+    const budget: BudgetFormData = {
+        name: budgetObj.name,
+        amount: budgetObj.amount.toNumber(),
+        startDate: new Date(budgetObj.duration.createdAt.toString())
+            .toISOString()
+            .substring(
+                0,
+                new Date(budgetObj.duration.createdAt.toString())
+                    .toISOString()
+                    .indexOf('T') + 6
+            ),
+        endDate: new Date(budgetObj.duration.finishAt.toString())
+            .toISOString()
+            .substring(
+                0,
+                new Date(budgetObj.duration.finishAt.toString())
+                    .toISOString()
+                    .indexOf('T') + 6
+            ),
+        accounts: budgetObj.accounts.map((account) => ({
+            label: account.name,
+            value: account.accountId.toString(),
+        })),
+        categories: budgetObj.categories.map((category) => ({
+            label: category.name,
+            value: category.categoryId.toString(),
+        })),
+        currency: budgetObj.currency,
+    }
+
+    const accounts: Array<BankAccountType> = accountList.map((account) => ({
+        accountId: account.accountId,
+        name: account.name,
+    }))
+
+    const categories: Array<CategoryType> = categoryList.map((category) => ({
+        categoryId: category.categoryId,
+        name: category.name,
+    }))
+
+    const currencies = [Currency.CRC, Currency.USD]
     return {
         props: {
-            types,
-            data: category,
+            accounts,
+            categories,
+            currencies,
+            budget,
         },
     }
 }
 
-export default addCategory
+export default Budget

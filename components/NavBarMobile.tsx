@@ -21,7 +21,7 @@ const NavBarMobile: React.FC = () => {
     }
 
     return (
-        <Box bg="primary" color="text" p={4}>
+        <Box bg="primary" color="text" p={4} zIndex={100}>
             <Flex align="center" justify="space-between">
                 <IconButton
                     icon={isOpen ? <FiX /> : <FiMenu />}
@@ -58,6 +58,15 @@ const NavBarMobile: React.FC = () => {
                             _hover={{ bg: 'secondary', color: 'white' }}
                         >
                             {t('Home')}
+                        </Link>
+                        <Link
+                            href="/budget"
+                            color="text"
+                            py={2}
+                            px={4}
+                            _hover={{ bg: 'secondary', color: 'white' }}
+                        >
+                            {t('Budgets')}
                         </Link>
                         <Link
                             href="/account"

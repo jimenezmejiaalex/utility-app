@@ -21,6 +21,9 @@ const NavBarDesktop: React.FC = () => {
                 <Link href="/" color="text" mx={2}>
                     {t('Home')}
                 </Link>
+                <Link href="/budget" color="text" mx={2}>
+                    {t('Budgets')}
+                </Link>
                 <Link href="/account" color="text" mx={2}>
                     {t('Accounts')}
                 </Link>

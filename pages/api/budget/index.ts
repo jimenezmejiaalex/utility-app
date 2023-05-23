@@ -12,8 +12,8 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
             case "POST":
                 {
                     const newBudget: BudgetInput = JSON.parse(body);
-                    const accountResponse = await budgetService.addBudget(newBudget);
-                    res.status(200).json(JSON.stringify(accountResponse))
+                    const budgetResponse = await budgetService.addBudget(newBudget);
+                    res.status(200).json(JSON.stringify(budgetResponse))
                 }
                 break;
 

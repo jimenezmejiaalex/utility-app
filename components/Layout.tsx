@@ -1,3 +1,4 @@
+import { Flex } from '@chakra-ui/react'
 import Head from 'next/head'
 import { ReactNode } from 'react'
 import Footer from './Footer'
@@ -9,7 +10,7 @@ type Props = {
 }
 
 const Layout = ({ children, title = 'This is the default title' }: Props) => (
-    <div>
+    <Flex direction="column" p={0}>
         <Head>
             <title>{title}</title>
             <meta charSet="utf-8" />
@@ -25,7 +26,7 @@ const Layout = ({ children, title = 'This is the default title' }: Props) => (
         <footer>
             <Footer />
         </footer>
-    </div>
+    </Flex>
 )
 
 export default Layout

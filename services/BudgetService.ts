@@ -11,14 +11,21 @@ export class BudgetService {
     async addBudget(budget: BudgetInput): Promise<Budget> {
         try {
             const categories = await this.categoryService
-                .getCategoriesByIds(budget.categories.map(category => parseInt(category)));
+                .getCategoriesByIds(
+                    budget.categories.map(category => parseInt(category.value.toString()))
+                );
             const accounts = await this.accountService
-                .getAccountsByIds(budget.categories.map(category => parseInt(category)));
+                .getAccountsByIds(
+                    budget.accounts.map(account => parseInt(account.value.toString()))
+                );
+
+            console.log(categories, accounts);
 
             const response = await BudgetDB.create({
                 data: {
                     name: budget.name,
                     amount: budget.amount,
+                    currency: budget.currency,
                     duration: {
                         create: {
                             createdAt: new Date(budget.startDate),
@@ -44,9 +51,13 @@ export class BudgetService {
     async updateBudget(budget: BudgetInput, id: number): Promise<Budget> {
         try {
             const categories = await this.categoryService
-                .getCategoriesByIds(budget.categories.map(category => parseInt(category)));
+                .getCategoriesByIds(
+                    budget.categories.map(category => parseInt(category.value.toString()))
+                );
             const accounts = await this.accountService
-                .getAccountsByIds(budget.categories.map(category => parseInt(category)));
+                .getAccountsByIds(
+                    budget.accounts.map(account => parseInt(account.value.toString()))
+                );
 
             const response = await BudgetDB.update({
                 where: {
@@ -62,10 +73,10 @@ export class BudgetService {
                         }
                     },
                     accounts: {
-                        connect: accounts
+                        set: accounts,
                     },
                     categories: {
-                        connect: categories
+                        set: categories
                     }
                 }
             });
@@ -92,7 +103,7 @@ export class BudgetService {
         }
     }
 
-    async getBudget(): Promise<Array<Budget>> {
+    async getBudgets(): Promise<Array<Budget>> {
         try {
             const response = await BudgetDB.findMany({
                 select: {
@@ -103,7 +114,8 @@ export class BudgetService {
                     categories: true,
                     accounts: true,
                     duration: true,
-                    durationId: true
+                    durationId: true,
+                    currency: true
                 }
             });
 
@@ -138,7 +150,7 @@ export class BudgetService {
                         }
                     },
                     duration: true,
-                    durationId: true
+                    currency: true
                 }
             });
 

@@ -28,6 +28,7 @@ export class AccountService {
 
     async getAccountsByIds(ids: Array<number>): Promise<Array<{ id: string }>> {
         try {
+            console.log(ids)
             const response = await BankAccountDB.findMany({
                 select: {
                     id: true,
@@ -93,7 +94,7 @@ export class AccountService {
                     amount: true,
                     name: true,
                     currency: true,
-                    userId: true
+                    userId: true,
                 }
             });
 

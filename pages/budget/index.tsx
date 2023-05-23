@@ -1,30 +1,30 @@
-import CategoryList from '@/components/CategoryList'
+import BudgetList from '@/components/BudgetList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { CategoryItem } from '@/interfaces'
-import { CategoryService } from '@/services/CategoryService'
+import { BudgetItem } from '@/interfaces'
+import { BudgetService } from '@/services/BudgetService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
 import { GetServerSideProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
-type CategoryProps = {
-    categories: Array<CategoryItem>
+type BudgetProps = {
+    budgets: Array<BudgetItem>
 }
 
-const Category: React.FC<CategoryProps> = ({ categories }) => {
+const Budget: React.FC<BudgetProps> = ({ budgets }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [categoriesState, setCategoriesState] = useState(categories)
+    const [budgetsState, setBudgetsState] = useState(budgets)
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
-        const response = await fetch(`/api/category/${id}`, {
+        const response = await fetch(`/api/budget/${id}`, {
             method: 'DELETE',
         })
         const data = await response.json()
         console.log(data)
-        setCategoriesState([
-            ...categoriesState.filter((account) => account.categoryId !== id),
+        setBudgetsState([
+            ...budgetsState.filter((budget) => budget.budgetId !== id),
         ])
         setIsLoading(false)
     }
@@ -32,10 +32,10 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
         return <LoadingComponent />
     }
     return (
-        <Layout title="Categories">
-            <CategoryList
+        <Layout title="Budgets">
+            <BudgetList
                 onDeleteAction={onDeleteAction}
-                categories={categoriesState}
+                budgets={budgetsState}
             />
             <Box
                 position="fixed"
@@ -43,7 +43,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
                 right={['16px', '14px']}
                 zIndex={1}
             >
-                <Link href="/category/add">
+                <Link href="/budget/add">
                     <IconButton
                         variant="solid"
                         colorScheme="red"
@@ -58,17 +58,21 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<CategoryProps> = async (
+export const getServerSideProps: GetServerSideProps<BudgetProps> = async (
     ctx
 ) => {
-    const categoryService = new CategoryService()
-    const categories = await categoryService.getCategories()
-    console.log(categories)
+    const budgetService = new BudgetService()
+    const budgets = await budgetService.getBudgets()
     return {
         props: {
-            categories,
+            budgets: budgets.map((budget) => ({
+                budgetId: budget.budgetId,
+                currency: budget.currency,
+                name: budget.name,
+                amountNumber: budget.amount.toNumber(),
+            })),
         },
     }
 }
 
-export default Category
+export default Budget

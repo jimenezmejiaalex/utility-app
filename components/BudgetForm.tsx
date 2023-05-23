@@ -18,7 +18,7 @@ import {
     NumberInputStepper,
 } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { MultiValue, Select, useChakraSelectProps } from 'chakra-react-select'
+import { Select } from 'chakra-react-select'
 import React, { useState } from 'react'
 import SelectComponent from './SelectComponent'
 
@@ -51,46 +51,46 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
         }
     )
 
-    console.log(formData)
-
-    const selectCategoriesProps = useChakraSelectProps({
-        name: 'categories',
-        instanceId: 'chakra-react-select-1',
-        isMulti: true,
-        options: categories.map((category) => ({
+    const categoriesOptions: Array<SelectOptions> = categories.map(
+        (category) => ({
             value: category.categoryId.toString(),
             label: category.name,
-        })),
-        placeholder: 'Select Categories',
-        closeMenuOnSelect: false,
-        onChange(newValue: MultiValue<SelectOptions>) {
-            handleCategoryChange([...newValue.map((option) => option.value)])
-        },
-    })
+        })
+    )
 
-    const selectAccountsProps = useChakraSelectProps({
-        name: 'accounts',
-        instanceId: 'chakra-react-select-2',
-        isMulti: true,
-        options: accounts.map((account) => ({
-            value: account.accountId.toString(),
-            label: account.name,
-        })),
-        placeholder: 'Select Accounts',
-        closeMenuOnSelect: false,
-        onChange(newValue: MultiValue<SelectOptions>) {
-            handleAccountChange([...newValue.map((option) => option.value)])
-        },
-    })
+    const accountsOptions: Array<SelectOptions> = accounts.map((account) => ({
+        value: account.accountId.toString(),
+        label: account.name,
+    }))
 
-    const handleCategoryChange = (selectedCategories: Array<string>) => {
+    const categoriesSelected: Array<SelectOptions> = []
+
+    const accountsSelected: Array<SelectOptions> = []
+
+    if (formData?.categories && formData.categories.length > 0) {
+        formData.categories.forEach((category) =>
+            categoriesSelected.push(
+                categoriesOptions.find((c) => c.value === category.value)
+            )
+        )
+    }
+
+    if (formData?.accounts && formData.categories.length > 0) {
+        formData.accounts.forEach((account) =>
+            accountsSelected.push(
+                accountsOptions.find((a) => a.value === account.value)
+            )
+        )
+    }
+
+    const handleCategoryChange = (selectedCategories: Array<SelectOptions>) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             categories: selectedCategories,
         }))
     }
 
-    const handleAccountChange = (selectedAccounts: Array<string>) => {
+    const handleAccountChange = (selectedAccounts: Array<SelectOptions>) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
             accounts: selectedAccounts,
@@ -148,6 +148,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                         size="md"
                         type="datetime-local"
                         name="startDate"
+                        value={formData.startDate || ''}
                         onChange={handleChange}
                     />
                 </FormControl>
@@ -159,6 +160,7 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                         size="md"
                         type="datetime-local"
                         name="endDate"
+                        value={formData.endDate || ''}
                         onChange={handleChange}
                     />
                 </FormControl>
@@ -166,30 +168,26 @@ const BudgetForm: React.FC<BudgetFormProps> = ({
                 <FormControl mb={4}>
                     <FormLabel>Categories</FormLabel>
                     <Select
-                        name={selectCategoriesProps.name}
-                        instanceId={selectCategoriesProps.instanceId}
-                        isMulti={selectCategoriesProps.isMulti}
-                        options={selectCategoriesProps.options}
-                        placeholder={selectCategoriesProps.placeholder}
-                        closeMenuOnSelect={
-                            selectCategoriesProps.closeMenuOnSelect
-                        }
-                        onChange={selectCategoriesProps.onChange}
+                        name="categories"
+                        isMulti
+                        options={categoriesOptions}
+                        placeholder="Select Categories"
+                        closeMenuOnSelect={false}
+                        onChange={handleCategoryChange}
+                        defaultValue={categoriesSelected}
                     />
                 </FormControl>
 
                 <FormControl mb={4}>
                     <FormLabel>Accounts</FormLabel>
                     <Select
-                        name={selectAccountsProps.name}
-                        instanceId={selectAccountsProps.instanceId}
-                        isMulti={selectAccountsProps.isMulti}
-                        options={selectAccountsProps.options}
-                        placeholder={selectAccountsProps.placeholder}
-                        closeMenuOnSelect={
-                            selectAccountsProps.closeMenuOnSelect
-                        }
-                        onChange={selectAccountsProps.onChange}
+                        name="accounts"
+                        isMulti
+                        options={accountsOptions}
+                        placeholder="Select Accounts"
+                        closeMenuOnSelect={false}
+                        onChange={handleAccountChange}
+                        defaultValue={accountsSelected}
                     />
                 </FormControl>
 

@@ -1,8 +1,8 @@
-import { BankAccountCreate } from '@/interfaces';
-import { AccountService } from '@/services/AccountService';
+import { BudgetInput } from '@/interfaces';
+import { BudgetService } from '@/services/BudgetService';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-const accountService = new AccountService();
+const budgetService = new BudgetService();
 
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
@@ -13,8 +13,8 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
             case "PATCH":
                 {
                     console.log(id);
-                    const newAccount: BankAccountCreate = JSON.parse(body);
-                    const accountResponse = await accountService.updateBankAccount(newAccount, parseInt(id.toString()));
+                    const newBudget: BudgetInput = JSON.parse(body);
+                    const accountResponse = await budgetService.updateBudget(newBudget, parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
                 break;
@@ -22,8 +22,8 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
             case "DELETE":
                 {
                     console.log(id);
-                    const accountResponse = await accountService.deleteBankAccount(parseInt(id.toString()));
-                    res.status(200).json(JSON.stringify(accountResponse))
+                    const budgetResponse = await budgetService.deleteBudget(parseInt(id.toString()));
+                    res.status(200).json(JSON.stringify(budgetResponse))
                 }
                 break;
 

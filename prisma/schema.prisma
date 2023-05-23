@@ -69,8 +69,7 @@ model BankAccount {
   amount    Decimal
   User      User?    @relation(fields: [userId], references: [id])
   userId    String?
-  Budget    Budget?  @relation(fields: [budgetId], references: [id])
-  budgetId  String?
+  budgets   Budget[]
 }
 
 model Budget {
@@ -79,6 +78,7 @@ model Budget {
   name       String
   amount     Decimal
   durationId String
+  currency   Currency
   duration   Duration      @relation(fields: [durationId], references: [id])
   accounts   BankAccount[]
   categories Category[]
