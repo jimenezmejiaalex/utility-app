@@ -1,5 +1,4 @@
 import LoginForm from '@/components/LoginForm'
-import withI18n from '@/components/withI18n'
 import { Container, Heading } from '@chakra-ui/react'
 import { useTranslation } from 'react-i18next'
 
@@ -15,4 +14,4 @@ const login = ({}) => {
     )
 }
 
-export default withI18n(login)
+export default login
