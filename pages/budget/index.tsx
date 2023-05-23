@@ -5,7 +5,7 @@ import { BudgetItem } from '@/interfaces'
 import { BudgetService } from '@/services/BudgetService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
-import { GetServerSideProps } from 'next/types'
+import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -58,9 +58,7 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<BudgetProps> = async (
-    ctx
-) => {
+export const getStaticProps: GetStaticProps = async (ctx) => {
     const budgetService = new BudgetService()
     const budgets = await budgetService.getBudgets()
     return {

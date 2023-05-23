@@ -5,7 +5,7 @@ import { BankAccountItem } from '@/interfaces'
 import { AccountService } from '@/services/AccountService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
-import { GetServerSideProps } from 'next/types'
+import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -58,9 +58,7 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AccountProps> = async (
-    ctx
-) => {
+export const getStaticProps: GetStaticProps = async (ctx) => {
     const accountService = new AccountService()
     const bankAccounts = await accountService.getBankAccounts()
     const accounts: Array<BankAccountItem> = bankAccounts.map((account) => ({

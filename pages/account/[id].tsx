@@ -7,9 +7,9 @@ import { AccountService } from '@/services/AccountService'
 import { UserService } from '@/services/UserService'
 import { Heading, Stack } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { GetServerSideProps } from 'next'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
+import { GetStaticPaths, GetStaticProps } from 'next/types'
 import { useState } from 'react'
 
 const currency = [Currency.CRC, Currency.USD]
@@ -61,7 +61,18 @@ const Account = ({ users, account }) => {
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
+export const getStaticPaths: GetStaticPaths = async () => {
+    const accountService = new AccountService()
+    const accounts = await accountService.getBankAccounts()
+    return {
+        paths: accounts.map((c) => ({
+            params: { id: c.accountId.toString() },
+        })),
+        fallback: true,
+    }
+}
+
+export const getStaticProps: GetStaticProps = async (ctx) => {
     const id = ctx.params.id
     console.log(id)
     const userService = new UserService()

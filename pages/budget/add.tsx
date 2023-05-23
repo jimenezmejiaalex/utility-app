@@ -7,7 +7,7 @@ import { AccountService } from '@/services/AccountService'
 import { CategoryService } from '@/services/CategoryService'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
-import { GetServerSideProps } from 'next'
+import { GetStaticProps } from 'next'
 import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 
@@ -64,23 +64,27 @@ const addBudget: React.FC<AddBudgetProps> = ({
     )
 }
 
-export const getServerSideProps: GetServerSideProps<AddBudgetProps> = async (
-    ctx
-) => {
+export const getStaticProps: GetStaticProps = async (ctx) => {
     const accountService = new AccountService()
     const categoryService = new CategoryService()
     const accountList = await accountService.getBankAccounts()
     const categoryList = await categoryService.getCategories()
 
-    const accounts: Array<BankAccountType> = accountList.map((account) => ({
-        accountId: account.accountId,
-        name: account.name,
-    }))
+    const accounts: Array<BankAccountType> =
+        accountList.length === 0
+            ? []
+            : accountList.map((account) => ({
+                  accountId: account.accountId,
+                  name: account.name,
+              }))
 
-    const categories: Array<CategoryType> = categoryList.map((category) => ({
-        categoryId: category.categoryId,
-        name: category.name,
-    }))
+    const categories: Array<CategoryType> =
+        categoryList.length === 0
+            ? []
+            : categoryList.map((category) => ({
+                  categoryId: category.categoryId,
+                  name: category.name,
+              }))
 
     const currencies = [Currency.CRC, Currency.USD]
     return {

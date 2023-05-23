@@ -26,7 +26,7 @@ const BudgetList: React.FC<BudgetListProps> = ({ budgets, onDeleteAction }) => {
     }
     return (
         <TableContainer>
-            <Table variant="simple">
+            <Table variant="striped">
                 <TableCaption>List of Budgets</TableCaption>
                 <Thead>
                     <Tr>
