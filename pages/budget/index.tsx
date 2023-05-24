@@ -70,6 +70,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
                 amountNumber: budget.amount.toNumber(),
             })),
         },
+        revalidate: 10,
     }
 }
 

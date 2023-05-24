@@ -66,6 +66,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         props: {
             categories,
         },
+        revalidate: 10,
     }
 }
 

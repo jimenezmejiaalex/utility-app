@@ -93,6 +93,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             categories,
             currencies,
         },
+        revalidate: 10,
     }
 }
 

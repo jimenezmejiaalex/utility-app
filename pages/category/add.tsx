@@ -60,6 +60,7 @@ export const getStaticProps: GetStaticProps = (ctx) => {
         props: {
             types,
         },
+        revalidate: 10,
     }
 }
 

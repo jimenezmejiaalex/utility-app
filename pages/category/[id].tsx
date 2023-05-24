@@ -80,6 +80,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             types,
             data: category,
         },
+        revalidate: 10,
     }
 }
 

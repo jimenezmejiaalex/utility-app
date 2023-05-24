@@ -71,6 +71,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         props: {
             accounts,
         },
+        revalidate: 10,
     }
 }
 

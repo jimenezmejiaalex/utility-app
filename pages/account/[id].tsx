@@ -93,6 +93,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             users,
             account: accountProp,
         },
+        revalidate: 10,
     }
 }
 

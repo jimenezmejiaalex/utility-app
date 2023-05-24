@@ -141,6 +141,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             currencies,
             budget,
         },
+        revalidate: 10,
     }
 }
 
