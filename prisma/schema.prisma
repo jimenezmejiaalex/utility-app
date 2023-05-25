@@ -82,6 +82,7 @@ model Budget {
   duration   Duration      @relation(fields: [durationId], references: [id])
   accounts   BankAccount[]
   categories Category[]
+  Expense    Expense[]
 }
 
 model Category {
@@ -102,4 +103,15 @@ model Duration {
   createdAt DateTime
   finishAt  DateTime
   budgets   Budget[]
+}
+
+model Expense {
+  id        String   @id @default(cuid())
+  expenseId Int      @unique @default(autoincrement())
+  name      String
+  currency  Currency
+  amount    Decimal
+  createdAt DateTime
+  budget    Budget   @relation(fields: [budgetId], references: [id])
+  budgetId  String
 }

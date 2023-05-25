@@ -68,6 +68,14 @@ export type BudgetFormData = {
   currency: Currency
 }
 
+export type ExpenseFormData = {
+  name: string
+  currency: Currency
+  amount: number
+  createdAt: string
+  budgetId: string
+}
+
 interface BudgetI extends Budget {
   amountNumber: number
 }
@@ -75,3 +83,7 @@ interface BudgetI extends Budget {
 export type BudgetItem = Pick<BudgetI, "budgetId" | "name" | "amountNumber" | "currency">
 
 export type BudgetInput = BudgetFormData
+
+export type ExpenseInput = ExpenseFormData
+
+export type BudgetType = Pick<Budget, "budgetId" | "name">
