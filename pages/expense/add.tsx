@@ -1,9 +1,10 @@
 import ExpenseForm from '@/components/ExpenseForm'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { BudgetType, ExpenseFormData } from '@/interfaces'
+import { BudgetType, CategoryType, ExpenseFormData } from '@/interfaces'
 import Login from '@/pages/login'
 import { BudgetService } from '@/services/BudgetService'
+import { CategoryService } from '@/services/CategoryService'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
 import { GetStaticProps } from 'next'
@@ -13,9 +14,14 @@ import React, { useState } from 'react'
 type AddExpenseProps = {
     budgets: Array<BudgetType>
     currencies: Array<Currency>
+    categories: Array<CategoryType>
 }
 
-const addExpense: React.FC<AddExpenseProps> = ({ budgets, currencies }) => {
+const addExpense: React.FC<AddExpenseProps> = ({
+    budgets,
+    currencies,
+    categories,
+}) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
 
@@ -44,11 +50,12 @@ const addExpense: React.FC<AddExpenseProps> = ({ budgets, currencies }) => {
         <>
             <Layout title="Add Expense">
                 <Stack spacing={6}>
-                    <Heading m={4}>Add Budget</Heading>
+                    <Heading m={4}>Add Expense</Heading>
                     <ExpenseForm
                         isLoading={isLoading}
                         budgets={budgets}
                         currencies={currencies}
+                        categories={categories}
                         onSubmit={handleOnSubmit}
                     />
                 </Stack>
@@ -59,7 +66,10 @@ const addExpense: React.FC<AddExpenseProps> = ({ budgets, currencies }) => {
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
     const budgetService = new BudgetService()
+    const categoryService = new CategoryService()
+
     const budgetList = await budgetService.getBudgets()
+    const categoryList = await categoryService.getCategories()
 
     const budgets: Array<BudgetType> =
         budgetList.length === 0
@@ -69,11 +79,20 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
                   name: budget.name,
               }))
 
+    const categories: Array<CategoryType> =
+        categoryList.length === 0
+            ? []
+            : categoryList.map((category) => ({
+                  categoryId: category.categoryId,
+                  name: category.name,
+              }))
+
     const currencies = [Currency.CRC, Currency.USD]
     return {
         props: {
             budgets,
             currencies,
+            categories,
         },
         revalidate: 10,
     }

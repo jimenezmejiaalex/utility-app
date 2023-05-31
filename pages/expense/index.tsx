@@ -1,30 +1,30 @@
-import BudgetList from '@/components/BudgetList'
+import ExpenseList from '@/components/ExpenseList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { BudgetItem } from '@/interfaces'
-import { BudgetService } from '@/services/BudgetService'
+import { ExpenseItem } from '@/interfaces'
+import { ExpenseService } from '@/services/ExpenseService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
 import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
-type BudgetProps = {
-    budgets: Array<BudgetItem>
+type ExpenseProps = {
+    expenses: Array<ExpenseItem>
 }
 
-const Budget: React.FC<BudgetProps> = ({ budgets }) => {
+const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [budgetsState, setBudgetsState] = useState(budgets)
+    const [expensesState, setExpensesState] = useState(expenses)
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
-        const response = await fetch(`/api/budget/${id}`, {
+        const response = await fetch(`/api/expense/${id}`, {
             method: 'DELETE',
         })
         const data = await response.json()
         console.log(data)
-        setBudgetsState([
-            ...budgetsState.filter((budget) => budget.budgetId !== id),
+        setExpensesState([
+            ...expensesState.filter((expense) => expense.expenseId !== id),
         ])
         setIsLoading(false)
     }
@@ -32,10 +32,10 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
         return <LoadingComponent />
     }
     return (
-        <Layout title="Budgets">
-            <BudgetList
+        <Layout title="Expenses">
+            <ExpenseList
                 onDeleteAction={onDeleteAction}
-                budgets={budgetsState}
+                expenses={expensesState}
             />
             <Box
                 position="fixed"
@@ -43,7 +43,7 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
                 right={['16px', '14px']}
                 zIndex={1}
             >
-                <Link href="/budget/add">
+                <Link href="/expense/add">
                     <IconButton
                         variant="solid"
                         colorScheme="red"
@@ -58,16 +58,16 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
-    const budgetService = new BudgetService()
-    const budgets = await budgetService.getBudgets()
+export const getStaticProps: GetStaticProps<ExpenseProps> = async (ctx) => {
+    const expenseService = new ExpenseService()
+    const expenses = await expenseService.getExpenses()
     return {
         props: {
-            budgets: budgets.map((budget) => ({
-                budgetId: budget.budgetId,
-                currency: budget.currency,
-                name: budget.name,
-                amountNumber: budget.amount.toNumber(),
+            expenses: expenses.map((expense) => ({
+                expenseId: expense.expenseId,
+                currency: expense.currency,
+                name: expense.name,
+                amountNumber: expense.amount.toNumber(),
             })),
         },
         revalidate: 10,

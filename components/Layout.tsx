@@ -28,7 +28,7 @@ export default function Layout({ children, title }: Props) {
                     content="initial-scale=1.0, width=device-width"
                 />
             </Head>
-            <Box position="fixed" width="100%">
+            <Box position="fixed" width="100%" zIndex={50}>
                 <header>
                     <SidebarContent
                         onClose={() => onClose}

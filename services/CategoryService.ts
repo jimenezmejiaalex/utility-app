@@ -33,7 +33,7 @@ export class CategoryService {
         }
     }
 
-    async getCategories(): Promise<Array<Category>> {
+    async getCategories() {
         try {
             const response = await CategoryDB.findMany({
                 select: {
@@ -71,7 +71,60 @@ export class CategoryService {
         }
     }
 
-    async getCategory(id: number): Promise<Category> {
+    async getCategoriesByBudgetIdAndExpenseCreateAtRange(budgetId: number, from: string, to: string) {
+        try {
+            const response = await CategoryDB.findMany({
+                where: {
+                    expenses: {
+                        every: {
+                            budget: {
+                                budgetId: budgetId
+                            }
+                            // AND: [
+                            //     {
+                            //         budget: {
+                            //             budgetId: budgetId
+                            //         }
+                            //     },
+                            //     {
+                            //         createdAt: {
+                            //             gte: new Date(from),
+                            //             lt: new Date(to)
+                            //         }
+                            //     }
+                            // ]
+                        }
+                    }
+                },
+                select: {
+                    name: true,
+                    expenses: {
+                        select: {
+                            name: true,
+                            amount: true,
+                            currency: true,
+                            createdAt: true,
+                            budget: {
+                                select: {
+                                    budgetId: true,
+                                    name: true,
+                                    amount: true,
+                                    currency: true
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            return response;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    async getCategory(id: number) {
         try {
             const response = await CategoryDB.findFirst({
                 where: {

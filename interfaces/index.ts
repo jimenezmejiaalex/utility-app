@@ -4,7 +4,7 @@
 //
 // import { User } from 'path/to/interfaces';
 
-import { BankAccount, Budget, Category, Currency, Type } from "@prisma/client"
+import { BankAccount, Budget, Category, Currency, Expense, Type } from "@prisma/client"
 
 export type User = {
   id: number
@@ -74,13 +74,20 @@ export type ExpenseFormData = {
   amount: number
   createdAt: string
   budgetId: string
+  categories: Array<SelectOptions>
 }
 
 interface BudgetI extends Budget {
   amountNumber: number
 }
 
+interface ExpenseI extends Expense {
+  amountNumber: number
+}
+
 export type BudgetItem = Pick<BudgetI, "budgetId" | "name" | "amountNumber" | "currency">
+
+export type ExpenseItem = Pick<ExpenseI, "expenseId" | "name" | "amountNumber" | "currency">
 
 export type BudgetInput = BudgetFormData
 

@@ -86,11 +86,13 @@ model Budget {
 }
 
 model Category {
-  id         String   @id @default(cuid())
-  categoryId Int      @unique @default(autoincrement())
+  id         String    @id @default(cuid())
+  categoryId Int       @unique @default(autoincrement())
   name       String
   type       Type
   budgets    Budget[]
+  expenses   Expense[]
+  expenseId  String?
 }
 
 enum Type {
@@ -106,12 +108,13 @@ model Duration {
 }
 
 model Expense {
-  id        String   @id @default(cuid())
-  expenseId Int      @unique @default(autoincrement())
-  name      String
-  currency  Currency
-  amount    Decimal
-  createdAt DateTime
-  budget    Budget   @relation(fields: [budgetId], references: [id])
-  budgetId  String
+  id         String     @id @default(cuid())
+  expenseId  Int        @unique @default(autoincrement())
+  name       String
+  currency   Currency
+  categories Category[]
+  amount     Decimal
+  createdAt  DateTime
+  budget     Budget     @relation(fields: [budgetId], references: [id])
+  budgetId   String
 }

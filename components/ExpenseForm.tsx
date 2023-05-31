@@ -1,4 +1,9 @@
-import { BudgetType, ExpenseFormData } from '@/interfaces'
+import {
+    BudgetType,
+    CategoryType,
+    ExpenseFormData,
+    SelectOptions,
+} from '@/interfaces'
 import {
     Box,
     Button,
@@ -13,6 +18,7 @@ import {
     NumberInputStepper,
 } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
+import { Select } from 'chakra-react-select'
 import React, { useState } from 'react'
 import SelectComponent from './SelectComponent'
 
@@ -22,6 +28,7 @@ type ExpenseFormProps = {
     defaultData?: ExpenseFormData
     budgets: Array<BudgetType>
     currencies: Array<Currency>
+    categories: Array<CategoryType>
 }
 
 const BudgetForm: React.FC<ExpenseFormProps> = ({
@@ -30,6 +37,7 @@ const BudgetForm: React.FC<ExpenseFormProps> = ({
     defaultData,
     budgets,
     currencies,
+    categories,
 }) => {
     console.log(budgets)
     const [formData, setFormData] = useState<ExpenseFormData>(
@@ -39,8 +47,33 @@ const BudgetForm: React.FC<ExpenseFormProps> = ({
             amount: 0,
             createdAt: '',
             budgetId: '',
+            categories: [],
         }
     )
+
+    const categoriesOptions: Array<SelectOptions> = categories.map(
+        (category) => ({
+            value: category.categoryId.toString(),
+            label: category.name,
+        })
+    )
+
+    const categoriesSelected: Array<SelectOptions> = []
+
+    if (formData?.categories && formData.categories.length > 0) {
+        formData.categories.forEach((category) =>
+            categoriesSelected.push(
+                categoriesOptions.find((c) => c.value === category.value)
+            )
+        )
+    }
+
+    const handleCategoryChange = (selectedCategories: Array<SelectOptions>) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            categories: selectedCategories,
+        }))
+    }
 
     const handleBudgetChange = (budgetId: string) => {
         setFormData((prevFormData) => ({
@@ -118,6 +151,19 @@ const BudgetForm: React.FC<ExpenseFormProps> = ({
                             value: budget.budgetId.toString(),
                             label: budget.name,
                         }))}
+                    />
+                </FormControl>
+
+                <FormControl mb={4}>
+                    <FormLabel>Categories</FormLabel>
+                    <Select
+                        name="categories"
+                        isMulti
+                        options={categoriesOptions}
+                        placeholder="Select Categories"
+                        closeMenuOnSelect={false}
+                        onChange={handleCategoryChange}
+                        defaultValue={categoriesSelected}
                     />
                 </FormControl>
 

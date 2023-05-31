@@ -1,9 +1,10 @@
 import ExpenseForm from '@/components/ExpenseForm'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { BudgetType, ExpenseFormData } from '@/interfaces'
+import { BudgetType, CategoryType, ExpenseFormData } from '@/interfaces'
 import Login from '@/pages/login'
 import { BudgetService } from '@/services/BudgetService'
+import { CategoryService } from '@/services/CategoryService'
 import { ExpenseService } from '@/services/ExpenseService'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
@@ -17,9 +18,15 @@ type ExpenseProps = {
     budgets: Array<BudgetType>
     currencies: Array<Currency>
     expense: ExpenseFormData
+    categories: Array<CategoryType>
 }
 
-const Expense: React.FC<ExpenseProps> = ({ budgets, currencies, expense }) => {
+const Expense: React.FC<ExpenseProps> = ({
+    budgets,
+    currencies,
+    expense,
+    categories,
+}) => {
     console.log('budgets', budgets)
     console.log('currencies', currencies)
     console.log('expense', expense)
@@ -59,6 +66,7 @@ const Expense: React.FC<ExpenseProps> = ({ budgets, currencies, expense }) => {
                         budgets={budgets}
                         currencies={currencies}
                         onSubmit={handleOnSubmit}
+                        categories={categories}
                         defaultData={expense}
                     />
                 </Stack>
@@ -83,8 +91,10 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
 
     const budgetService = new BudgetService()
     const expenseService = new ExpenseService()
+    const categoryService = new CategoryService()
 
     const budgetList = await budgetService.getBudgets()
+    const categoryList = await categoryService.getCategories()
 
     const expenseObj = await expenseService.getExpenseById(
         parseInt(id.toString())
@@ -96,6 +106,10 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         amount: expenseObj.amount.toNumber(),
         createdAt: getDate(expenseObj.createdAt.toString()),
         budgetId: expenseObj.budget.budgetId.toString(),
+        categories: expenseObj.categories.map((category) => ({
+            label: category.name,
+            value: category.categoryId.toString(),
+        })),
     }
 
     const budgets: Array<BudgetType> =
@@ -106,12 +120,21 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
                   name: budget.name,
               }))
 
+    const categories: Array<CategoryType> =
+        categoryList.length === 0
+            ? []
+            : categoryList.map((category) => ({
+                  categoryId: category.categoryId,
+                  name: category.name,
+              }))
+
     const currencies = [Currency.CRC, Currency.USD]
     return {
         props: {
             budgets,
             currencies,
             expense,
+            categories,
         },
         revalidate: 10,
     }
