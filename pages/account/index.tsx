@@ -22,7 +22,7 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
             method: 'DELETE',
         })
         const data = await response.json()
-        console.log(data)
+
         setAccountsState([
             ...accountsState.filter((account) => account.accountId !== id),
         ])
@@ -71,6 +71,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         props: {
             accounts,
         },
+        revalidate: 10,
     }
 }
 

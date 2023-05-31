@@ -8,7 +8,6 @@ const NavBarDesktop: React.FC = () => {
 
     const handleSignOut = () => {
         // Perform sign out logic here
-        console.log('Signing out...')
     }
 
     return (

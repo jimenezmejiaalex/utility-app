@@ -18,6 +18,9 @@
     "aws-sdk": "^2.1377.0",
     "chakra-react-select": "^4.6.0",
     "chakra-ui": "^0.3.9",
+    "chart.js": "^4.3.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "currency-converter-lt": "^2.0.0-beta.0",
     "date-fns": "^2.30.0",
     "framer-motion": "^10.12.10",
     "i18next": "^22.4.15",
@@ -25,9 +28,11 @@
     "next-auth": "^4.22.1",
     "nextjs-progressbar": "^0.0.16",
     "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",
     "react-i18next": "^12.2.2",
-    "react-icons": "^4.8.0"
+    "react-icons": "^4.8.0",
+    "recharts": "^2.6.2"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",

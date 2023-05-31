@@ -1,9 +1,9 @@
-import BudgetForm from '@/components/BudgetForm'
+import ExpenseForm from '@/components/ExpenseForm'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { BankAccountType, BudgetFormData, CategoryType } from '@/interfaces'
+import { BudgetType, CategoryType, ExpenseFormData } from '@/interfaces'
 import Login from '@/pages/login'
-import { AccountService } from '@/services/AccountService'
+import { BudgetService } from '@/services/BudgetService'
 import { CategoryService } from '@/services/CategoryService'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
@@ -11,16 +11,16 @@ import { GetStaticProps } from 'next'
 import { useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 
-type AddBudgetProps = {
-    accounts: Array<BankAccountType>
-    categories: Array<CategoryType>
+type AddExpenseProps = {
+    budgets: Array<BudgetType>
     currencies: Array<Currency>
+    categories: Array<CategoryType>
 }
 
-const addBudget: React.FC<AddBudgetProps> = ({
-    accounts,
-    categories,
+const addExpense: React.FC<AddExpenseProps> = ({
+    budgets,
     currencies,
+    categories,
 }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
@@ -33,29 +33,27 @@ const addBudget: React.FC<AddBudgetProps> = ({
         return <Login />
     }
 
-    const handleOnSubmit = async (budget: BudgetFormData) => {
+    const handleOnSubmit = async (expense: ExpenseFormData) => {
         setIsLoading(true)
-
-        const response = await fetch('/api/budget', {
+        const response = await fetch('/api/expense', {
             method: 'POST',
-            body: JSON.stringify(budget),
+            body: JSON.stringify(expense),
         })
 
         const data = await response.json()
-
         setIsLoading(false)
     }
 
     return (
         <>
-            <Layout title="Add Budget">
+            <Layout title="Add Expense">
                 <Stack spacing={6}>
-                    <Heading m={4}>Add Budget</Heading>
-                    <BudgetForm
+                    <Heading m={4}>Add Expense</Heading>
+                    <ExpenseForm
                         isLoading={isLoading}
-                        categories={categories}
-                        accounts={accounts}
+                        budgets={budgets}
                         currencies={currencies}
+                        categories={categories}
                         onSubmit={handleOnSubmit}
                     />
                 </Stack>
@@ -65,17 +63,18 @@ const addBudget: React.FC<AddBudgetProps> = ({
 }
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
-    const accountService = new AccountService()
+    const budgetService = new BudgetService()
     const categoryService = new CategoryService()
-    const accountList = await accountService.getBankAccounts()
+
+    const budgetList = await budgetService.getBudgets()
     const categoryList = await categoryService.getCategories()
 
-    const accounts: Array<BankAccountType> =
-        accountList.length === 0
+    const budgets: Array<BudgetType> =
+        budgetList.length === 0
             ? []
-            : accountList.map((account) => ({
-                  accountId: account.accountId,
-                  name: account.name,
+            : budgetList.map((budget) => ({
+                  budgetId: budget.budgetId,
+                  name: budget.name,
               }))
 
     const categories: Array<CategoryType> =
@@ -89,12 +88,12 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     const currencies = [Currency.CRC, Currency.USD]
     return {
         props: {
-            accounts,
-            categories,
+            budgets,
             currencies,
+            categories,
         },
         revalidate: 10,
     }
 }
 
-export default addBudget
+export default addExpense

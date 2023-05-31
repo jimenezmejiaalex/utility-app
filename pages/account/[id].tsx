@@ -15,10 +15,9 @@ import { useState } from 'react'
 const currency = [Currency.CRC, Currency.USD]
 
 const Account = ({ users, account }) => {
-    console.log(account)
     const router = useRouter()
     const id = router.query?.id
-    console.log(id)
+
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
 
@@ -32,14 +31,14 @@ const Account = ({ users, account }) => {
 
     const handleOnSubmit = async (bankAccount: AccountFormData) => {
         setIsLoading(true)
-        console.log(bankAccount, id)
+
         const response = await fetch(`/api/account/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(bankAccount),
         })
 
         const data = await response.json()
-        console.log(data)
+
         setIsLoading(false)
     }
 
@@ -74,7 +73,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
     const id = ctx.params.id
-    console.log(id)
+
     const userService = new UserService()
     const accountService = new AccountService()
     const users = await userService.getUsers()
@@ -87,12 +86,13 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         amount: account.amount.toNumber(),
         email: account.User.email,
     }
-    console.log(account)
+
     return {
         props: {
             users,
             account: accountProp,
         },
+        revalidate: 10,
     }
 }
 

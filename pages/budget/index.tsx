@@ -22,7 +22,7 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
             method: 'DELETE',
         })
         const data = await response.json()
-        console.log(data)
+
         setBudgetsState([
             ...budgetsState.filter((budget) => budget.budgetId !== id),
         ])
@@ -70,6 +70,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
                 amountNumber: budget.amount.toNumber(),
             })),
         },
+        revalidate: 10,
     }
 }
 

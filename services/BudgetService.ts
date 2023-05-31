@@ -19,7 +19,6 @@ export class BudgetService {
                     budget.accounts.map(account => parseInt(account.value.toString()))
                 );
 
-            console.log(categories, accounts);
 
             const response = await BudgetDB.create({
                 data: {

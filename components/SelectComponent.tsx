@@ -24,7 +24,6 @@ const SelectComponent: React.FC<SelectProps> = ({
     multiple,
 }) => {
     const handleUserChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(event.target.value)
         onChange(event.target.value)
     }
 

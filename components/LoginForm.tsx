@@ -53,7 +53,6 @@ const LoginForm: React.FC = () => {
 
             // Login successful
             setLoading(false)
-            console.log('Logged in!')
         } catch (error) {
             setLoading(false)
             setError(error.message)

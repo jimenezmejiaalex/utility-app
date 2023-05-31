@@ -1,29 +1,29 @@
-import CategoryList from '@/components/CategoryList'
+import ExpenseList from '@/components/ExpenseList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
-import { CategoryItem } from '@/interfaces'
-import { CategoryService } from '@/services/CategoryService'
+import { ExpenseItem } from '@/interfaces'
+import { ExpenseService } from '@/services/ExpenseService'
 import { Box, IconButton } from '@chakra-ui/react'
 import Link from 'next/link'
 import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
-type CategoryProps = {
-    categories: Array<CategoryItem>
+type ExpenseProps = {
+    expenses: Array<ExpenseItem>
 }
 
-const Category: React.FC<CategoryProps> = ({ categories }) => {
+const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [categoriesState, setCategoriesState] = useState(categories)
+    const [expensesState, setExpensesState] = useState(expenses)
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
-        const response = await fetch(`/api/category/${id}`, {
+        const response = await fetch(`/api/expense/${id}`, {
             method: 'DELETE',
         })
         const data = await response.json()
-        setCategoriesState([
-            ...categoriesState.filter((account) => account.categoryId !== id),
+        setExpensesState([
+            ...expensesState.filter((expense) => expense.expenseId !== id),
         ])
         setIsLoading(false)
     }
@@ -31,10 +31,10 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
         return <LoadingComponent />
     }
     return (
-        <Layout title="Categories">
-            <CategoryList
+        <Layout title="Expenses">
+            <ExpenseList
                 onDeleteAction={onDeleteAction}
-                categories={categoriesState}
+                expenses={expensesState}
             />
             <Box
                 position="fixed"
@@ -42,7 +42,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
                 right={['16px', '14px']}
                 zIndex={1}
             >
-                <Link href="/category/add">
+                <Link href="/expense/add">
                     <IconButton
                         variant="solid"
                         colorScheme="red"
@@ -57,15 +57,20 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
-    const categoryService = new CategoryService()
-    const categories = await categoryService.getCategories()
+export const getStaticProps: GetStaticProps<ExpenseProps> = async (ctx) => {
+    const expenseService = new ExpenseService()
+    const expenses = await expenseService.getExpenses()
     return {
         props: {
-            categories,
+            expenses: expenses.map((expense) => ({
+                expenseId: expense.expenseId,
+                currency: expense.currency,
+                name: expense.name,
+                amountNumber: expense.amount.toNumber(),
+            })),
         },
         revalidate: 10,
     }
 }
 
-export default Category
+export default Budget

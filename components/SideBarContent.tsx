@@ -8,11 +8,12 @@ import {
 } from '@chakra-ui/react'
 import { IconType } from 'react-icons'
 import {
-    FiCompass,
+    FiBriefcase,
+    FiDollarSign,
     FiHome,
+    FiList,
     FiSettings,
-    FiStar,
-    FiTrendingUp,
+    FiTrendingDown,
 } from 'react-icons/fi'
 import { NavItem } from './NavItem'
 
@@ -28,9 +29,10 @@ interface LinkItemProps {
 
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Home', icon: FiHome, href: '/' },
-    { name: 'Budgets', icon: FiTrendingUp, href: '/budget' },
-    { name: 'Accounts', icon: FiCompass, href: '/account' },
-    { name: 'Categories', icon: FiStar, href: '/category' },
+    { name: 'Expenses', icon: FiTrendingDown, href: '/expense' },
+    { name: 'Budgets', icon: FiDollarSign, href: '/budget' },
+    { name: 'Accounts', icon: FiBriefcase, href: '/account' },
+    { name: 'Categories', icon: FiList, href: '/category' },
     { name: 'Settings', icon: FiSettings, href: '$' },
 ]
 

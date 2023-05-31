@@ -28,7 +28,6 @@ export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 
     const user = session?.user
 
-    console.log(user)
     return (
         <Flex
             ml={{ base: 0, md: 60 }}

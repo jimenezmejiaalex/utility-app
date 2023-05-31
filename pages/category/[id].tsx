@@ -32,14 +32,14 @@ const addCategory: React.FC<AddCategoryProps> = ({ types, data }) => {
 
     const handleOnSubmit = async (category: CategoryFormData) => {
         setIsLoading(true)
-        console.log(category)
+
         const response = await fetch(`/api/category/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(category),
         })
 
         const data = await response.json()
-        console.log(data)
+
         setIsLoading(false)
     }
 
@@ -80,6 +80,7 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             types,
             data: category,
         },
+        revalidate: 10,
     }
 }
 

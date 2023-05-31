@@ -1,4 +1,9 @@
-import { AccountFormData, User } from '@/interfaces'
+import {
+    BudgetType,
+    CategoryType,
+    ExpenseFormData,
+    SelectOptions,
+} from '@/interfaces'
 import {
     Box,
     Button,
@@ -13,44 +18,66 @@ import {
     NumberInputStepper,
 } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
+import { Select } from 'chakra-react-select'
 import React, { useState } from 'react'
 import SelectComponent from './SelectComponent'
 
-type BankAccountFormProps = {
-    users: User[]
-    currencies: Currency[]
-    onSubmit: (bankAccount: AccountFormData) => void
+type ExpenseFormProps = {
+    onSubmit: (expense: ExpenseFormData) => void
     isLoading: boolean
-    defaultData?: AccountFormData
+    defaultData?: ExpenseFormData
+    budgets: Array<BudgetType>
+    currencies: Array<Currency>
+    categories: Array<CategoryType>
 }
 
-const BankAccountForm: React.FC<BankAccountFormProps> = ({
-    users,
-    currencies,
+const BudgetForm: React.FC<ExpenseFormProps> = ({
     onSubmit,
     isLoading,
     defaultData,
+    budgets,
+    currencies,
+    categories,
 }) => {
-    const [formData, setFormData] = useState<AccountFormData>(
+    const [formData, setFormData] = useState<ExpenseFormData>(
         defaultData || {
             name: '',
-            currency: '',
+            currency: null,
             amount: 0,
-            email: '',
+            createdAt: '',
+            budgetId: '',
+            categories: [],
         }
     )
 
-    const handleUserChange = (selectedUser: string) => {
+    const categoriesOptions: Array<SelectOptions> = categories.map(
+        (category) => ({
+            value: category.categoryId.toString(),
+            label: category.name,
+        })
+    )
+
+    const categoriesSelected: Array<SelectOptions> = []
+
+    if (formData?.categories && formData.categories.length > 0) {
+        formData.categories.forEach((category) =>
+            categoriesSelected.push(
+                categoriesOptions.find((c) => c.value === category.value)
+            )
+        )
+    }
+
+    const handleCategoryChange = (selectedCategories: Array<SelectOptions>) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            email: selectedUser,
+            categories: selectedCategories,
         }))
     }
 
-    const handleCurrenciesChange = (selectedCurrency: Currency) => {
+    const handleBudgetChange = (budgetId: string) => {
         setFormData((prevFormData) => ({
             ...prevFormData,
-            currency: selectedCurrency,
+            budgetId: budgetId,
         }))
     }
 
@@ -61,8 +88,16 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
         }))
     }
 
+    const handleCurrenciesChange = (selectedCurrency: Currency) => {
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            currency: selectedCurrency,
+        }))
+    }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
+
         if (name.length !== 0) {
             setFormData((prevFormData) => ({
                 ...prevFormData,
@@ -82,6 +117,7 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
                 <FormControl mb={4}>
                     <FormLabel>Name</FormLabel>
                     <Input
+                        required
                         disabled={isLoading}
                         type="text"
                         name="name"
@@ -91,17 +127,42 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
                 </FormControl>
 
                 <FormControl mb={4}>
+                    <FormLabel>Date</FormLabel>
+                    <Input
+                        placeholder="Select Date"
+                        size="md"
+                        type="datetime-local"
+                        name="createdAt"
+                        value={formData.createdAt || ''}
+                        onChange={handleChange}
+                    />
+                </FormControl>
+
+                <FormControl mb={4}>
                     <SelectComponent
                         required
-                        defaultValue={formData.email}
+                        title="Budget"
+                        placeholder="Select budget"
                         isLoading={isLoading}
-                        onChange={handleUserChange}
-                        data={users.map((user) => ({
-                            label: user.name,
-                            value: user.email,
+                        defaultValue={formData.budgetId}
+                        onChange={handleBudgetChange}
+                        data={budgets.map((budget) => ({
+                            value: budget.budgetId.toString(),
+                            label: budget.name,
                         }))}
-                        title="User"
-                        placeholder="Select User"
+                    />
+                </FormControl>
+
+                <FormControl mb={4}>
+                    <FormLabel>Categories</FormLabel>
+                    <Select
+                        name="categories"
+                        isMulti
+                        options={categoriesOptions}
+                        placeholder="Select Categories"
+                        closeMenuOnSelect={false}
+                        onChange={handleCategoryChange}
+                        defaultValue={categoriesSelected}
                     />
                 </FormControl>
 
@@ -152,4 +213,4 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
     )
 }
 
-export default BankAccountForm
+export default BudgetForm

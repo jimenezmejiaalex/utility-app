@@ -26,7 +26,6 @@ const ReminderForm: React.FC<ReminderFormProps> = ({ onSubmit }) => {
         assignedBy: '',
     })
     const theme = useTheme()
-    console.log(formData)
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
