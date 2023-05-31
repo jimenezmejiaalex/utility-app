@@ -35,14 +35,12 @@ const addExpense: React.FC<AddExpenseProps> = ({
 
     const handleOnSubmit = async (expense: ExpenseFormData) => {
         setIsLoading(true)
-        console.log(expense)
         const response = await fetch('/api/expense', {
             method: 'POST',
             body: JSON.stringify(expense),
         })
 
         const data = await response.json()
-        console.log(data)
         setIsLoading(false)
     }
 

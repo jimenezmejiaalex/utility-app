@@ -39,7 +39,6 @@ const BudgetForm: React.FC<ExpenseFormProps> = ({
     currencies,
     categories,
 }) => {
-    console.log(budgets)
     const [formData, setFormData] = useState<ExpenseFormData>(
         defaultData || {
             name: '',
@@ -98,7 +97,7 @@ const BudgetForm: React.FC<ExpenseFormProps> = ({
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target
-        console.log(name, value)
+
         if (name.length !== 0) {
             setFormData((prevFormData) => ({
                 ...prevFormData,

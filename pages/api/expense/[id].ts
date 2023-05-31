@@ -12,7 +12,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
         switch (method) {
             case "PATCH":
                 {
-                    console.log(id);
+
                     const expense: ExpenseInput = JSON.parse(body);
                     const expenseResponse = await expenseService.updateExpense(expense, parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(expenseResponse))
@@ -21,7 +21,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
 
             case "DELETE":
                 {
-                    console.log(id);
+
                     const expenseResponse = await expenseService.deleteExpense(parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(expenseResponse))
                 }

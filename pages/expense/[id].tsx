@@ -27,9 +27,6 @@ const Expense: React.FC<ExpenseProps> = ({
     expense,
     categories,
 }) => {
-    console.log('budgets', budgets)
-    console.log('currencies', currencies)
-    console.log('expense', expense)
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
     const router = useRouter()
@@ -45,14 +42,12 @@ const Expense: React.FC<ExpenseProps> = ({
 
     const handleOnSubmit = async (expense: ExpenseFormData) => {
         setIsLoading(true)
-        console.log(expense)
         const response = await fetch(`/api/expense/${id}`, {
             method: 'PATCH',
             body: JSON.stringify(expense),
         })
 
         const data = await response.json()
-        console.log(data)
         setIsLoading(false)
     }
 

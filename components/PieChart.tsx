@@ -45,8 +45,6 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
         setPieData(data.categoriesByExpense)
         setBudgetName(data.budget.name)
 
-        console.log(data)
-
         setLoading(false)
     }
 
@@ -73,28 +71,6 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
     }
 
     const sum = pieData.reduce((acc, v) => acc + parseFloat(v.value), 0)
-
-    const options = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-            datalabels: {
-                formatter(value) {
-                    return `${((parseFloat(value) / sum) * 100).toFixed(2)} %`
-                },
-                color: 'white',
-                labels: {
-                    title: {
-                        font: {
-                            weight: 'bold',
-                        },
-                    },
-                },
-            },
-        },
-    }
-
-    console.log(data)
 
     return (
         <div>
@@ -161,7 +137,31 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
             </Flex>
             {true && (
                 <FormControl height="500px" pb={4}>
-                    <Pie data={data} options={options} />
+                    <Pie
+                        data={data}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                datalabels: {
+                                    formatter(value) {
+                                        return `${(
+                                            (parseFloat(value) / sum) *
+                                            100
+                                        ).toFixed(2)} %`
+                                    },
+                                    color: 'white',
+                                    labels: {
+                                        title: {
+                                            font: {
+                                                weight: 'bold',
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        }}
+                    />
                 </FormControl>
             )}
         </div>

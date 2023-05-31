@@ -35,14 +35,14 @@ const addBudget: React.FC<AddBudgetProps> = ({
 
     const handleOnSubmit = async (budget: BudgetFormData) => {
         setIsLoading(true)
-        console.log(budget)
+
         const response = await fetch('/api/budget', {
             method: 'POST',
             body: JSON.stringify(budget),
         })
 
         const data = await response.json()
-        console.log(data)
+
         setIsLoading(false)
     }
 

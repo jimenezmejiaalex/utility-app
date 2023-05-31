@@ -40,8 +40,6 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
         }
     )
 
-    console.log(formData)
-
     const handleUserChange = (selectedUser: string) => {
         setFormData((prevFormData) => ({
             ...prevFormData,

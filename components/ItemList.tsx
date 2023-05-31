@@ -33,14 +33,9 @@ const ItemList: React.FC<ItemListProps> = ({ itemList }) => {
         }
     }
 
-    const handleItemClick = (itemId: string) => {
-        console.log(`Haciendo clic en el elemento: ${itemId}`)
-    }
+    const handleItemClick = (itemId: string) => {}
 
-    const handleDeleteItem = (itemId: string) => {
-        // Realiza la lógica para eliminar un elemento aquí
-        console.log(`Eliminando elemento con id: ${itemId}`)
-    }
+    const handleDeleteItem = (itemId: string) => {}
 
     return (
         <Box p={4}>

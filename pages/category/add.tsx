@@ -27,14 +27,14 @@ const addCategory: React.FC<AddCategoryProps> = ({ types }) => {
 
     const handleOnSubmit = async (category: CategoryFormData) => {
         setIsLoading(true)
-        console.log(category)
+
         const response = await fetch('/api/category', {
             method: 'POST',
             body: JSON.stringify(category),
         })
 
         const data = await response.json()
-        console.log(data)
+
         setIsLoading(false)
     }
 

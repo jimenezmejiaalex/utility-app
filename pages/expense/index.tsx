@@ -22,7 +22,6 @@ const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
             method: 'DELETE',
         })
         const data = await response.json()
-        console.log(data)
         setExpensesState([
             ...expensesState.filter((expense) => expense.expenseId !== id),
         ])

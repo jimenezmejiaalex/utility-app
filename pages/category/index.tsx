@@ -22,7 +22,6 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
             method: 'DELETE',
         })
         const data = await response.json()
-        console.log(data)
         setCategoriesState([
             ...categoriesState.filter((account) => account.categoryId !== id),
         ])
@@ -61,7 +60,6 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
     const categoryService = new CategoryService()
     const categories = await categoryService.getCategories()
-    console.log(categories)
     return {
         props: {
             categories,

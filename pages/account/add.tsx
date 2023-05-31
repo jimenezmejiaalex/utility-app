@@ -26,14 +26,14 @@ const Account = ({ users }) => {
 
     const handleOnSubmit = async (bankAccount: AccountFormData) => {
         setIsLoading(true)
-        console.log(bankAccount)
+
         const response = await fetch('/api/account', {
             method: 'POST',
             body: JSON.stringify(bankAccount),
         })
 
         const data = await response.json()
-        console.log(data)
+
         setIsLoading(false)
     }
 

@@ -12,7 +12,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
         switch (method) {
             case "PATCH":
                 {
-                    console.log(id);
+
                     const newAccount: BankAccountCreate = JSON.parse(body);
                     const accountResponse = await accountService.updateBankAccount(newAccount, parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
@@ -21,7 +21,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
 
             case "DELETE":
                 {
-                    console.log(id);
+
                     const accountResponse = await accountService.deleteBankAccount(parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
