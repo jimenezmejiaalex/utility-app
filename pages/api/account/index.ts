@@ -7,6 +7,7 @@ const accountService = new AccountService();
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
     const body = _req.body;
+
     try {
         switch (method) {
             case "POST":

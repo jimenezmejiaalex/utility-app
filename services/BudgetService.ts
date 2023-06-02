@@ -1,14 +1,17 @@
 import { BudgetInput } from '@/interfaces';
 import { BudgetDB } from '@/services/DBService';
 import { Budget } from '@prisma/client';
+import { NextApiRequest } from 'next';
 import { AccountService } from './AccountService';
 import { CategoryService } from './CategoryService';
+import { UserService } from './UserService';
 
 export class BudgetService {
     private accountService = new AccountService();
     private categoryService = new CategoryService();
+    private userService = new UserService();
 
-    async addBudget(budget: BudgetInput): Promise<Budget> {
+    async addBudget(budget: BudgetInput, userSession: NextApiRequest): Promise<Budget> {
         try {
             const categories = await this.categoryService
                 .getCategoriesByIds(
@@ -36,6 +39,11 @@ export class BudgetService {
                     },
                     categories: {
                         connect: categories
+                    },
+                    creator: {
+                        connect: {
+                            email: userSession.email
+                        }
                     }
                 }
             });
@@ -102,9 +110,28 @@ export class BudgetService {
         }
     }
 
-    async getBudgets(): Promise<Array<Budget>> {
+    async getBudgets(request: NextApiRequest): Promise<Array<Omit<Budget, "userId">>> {
         try {
+            const userSession = await this.userService.getUserSession(request);
             const response = await BudgetDB.findMany({
+                where: {
+                    OR: [
+                        {
+                            creator: {
+                                email: userSession.email
+                            }
+                        },
+                        {
+                            creator: {
+                                users: {
+                                    some: {
+                                        email: userSession.email
+                                    }
+                                }
+                            }
+                        }
+                    ]
+                },
                 select: {
                     id: true,
                     budgetId: true,
@@ -125,8 +152,9 @@ export class BudgetService {
         }
     }
 
-    async getBudgetById(id: number) {
+    async getBudgetById(id: number, request: NextApiRequest) {
         try {
+            const userSession = await this.userService.getUserSession(request);
             const response = await BudgetDB.findFirst({
                 where: {
                     budgetId: id
@@ -149,11 +177,28 @@ export class BudgetService {
                         }
                     },
                     duration: true,
-                    currency: true
+                    currency: true,
+                    creator: {
+                        select: {
+                            email: true,
+                            users: {
+                                select: {
+                                    email: true
+                                }
+                            }
+                        }
+                    }
                 }
             });
 
-            return response;
+            if (
+                response.creator.email === userSession.email ||
+                response.creator.users.some(user => user.email === userSession.email)
+            ) {
+                return response;
+            }
+            return null;
+
         } catch (error) {
             console.error(error);
             return null;

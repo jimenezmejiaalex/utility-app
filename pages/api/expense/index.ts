@@ -4,15 +4,18 @@ import { CurrencyService } from '@/services/CurrencyService';
 import { ExpenseService } from '@/services/ExpenseService';
 import { Currency } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 const expenseService = new ExpenseService();
 const budgetService = new BudgetService();
-const currencyService = new CurrencyService
+const currencyService = new CurrencyService()
 
 const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
     const body = _req.body;
     const params = _req.query;
+    const session = await getServerSession(_req, res, authOptions);
     try {
         switch (method) {
             case "POST":

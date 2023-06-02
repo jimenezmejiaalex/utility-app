@@ -4,10 +4,11 @@ import LoadingComponent from '@/components/Loading'
 import { CategoryItem } from '@/interfaces'
 import { CategoryService } from '@/services/CategoryService'
 import { Box, IconButton } from '@chakra-ui/react'
+import { getSession, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
+import Login from '../login'
 
 type CategoryProps = {
     categories: Array<CategoryItem>
@@ -16,6 +17,19 @@ type CategoryProps = {
 const Category: React.FC<CategoryProps> = ({ categories }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [categoriesState, setCategoriesState] = useState(categories)
+
+    const { data: session, status } = useSession()
+
+    console.log(session)
+
+    if (status === 'loading') {
+        return <LoadingComponent />
+    }
+
+    if (!session) {
+        return <Login />
+    }
+
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
         const response = await fetch(`/api/category/${id}`, {
@@ -27,9 +41,7 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
         ])
         setIsLoading(false)
     }
-    if (isLoading) {
-        return <LoadingComponent />
-    }
+
     return (
         <Layout title="Categories">
             <CategoryList
@@ -57,14 +69,23 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return {
+            redirect: {
+                destination: '/login',
+            },
+        }
+    }
     const categoryService = new CategoryService()
-    const categories = await categoryService.getCategories()
+    const categories = await categoryService.getCategories(session.user)
+
+    console.log(categories)
     return {
         props: {
             categories,
         },
-        revalidate: 10,
     }
 }
 

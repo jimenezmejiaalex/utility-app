@@ -12,9 +12,9 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
         switch (method) {
             case "PATCH":
                 {
-
                     const newAccount: BankAccountCreate = JSON.parse(body);
-                    const accountResponse = await accountService.updateBankAccount(newAccount, parseInt(id.toString()));
+                    const accountResponse = await accountService
+                        .updateBankAccount(newAccount, parseInt(id.toString()));
                     res.status(200).json(JSON.stringify(accountResponse))
                 }
                 break;

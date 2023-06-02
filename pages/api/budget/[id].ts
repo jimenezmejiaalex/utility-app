@@ -1,6 +1,8 @@
 import { BudgetInput } from '@/interfaces';
 import { BudgetService } from '@/services/BudgetService';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 const budgetService = new BudgetService();
 
@@ -8,6 +10,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
     const body = _req.body;
     const id = _req.query.id;
+    const session = await getServerSession(_req, res, authOptions);
     try {
         switch (method) {
             case "PATCH":

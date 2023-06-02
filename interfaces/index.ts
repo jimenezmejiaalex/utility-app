@@ -6,8 +6,12 @@
 
 import { BankAccount, Budget, Category, Currency, Expense, Type } from "@prisma/client"
 
+export type ShareWithUsersInput = {
+  usersForAccount: Array<SelectOptions>
+}
+
 export type User = {
-  id: number
+  id: string
   name: string
   email: string
 }
@@ -77,6 +81,10 @@ export type ExpenseFormData = {
   categories: Array<SelectOptions>
 }
 
+export type SettingsFormData = {
+  usersForAccount: Array<SelectOptions>
+}
+
 interface BudgetI extends Budget {
   amountNumber: number
 }
@@ -94,3 +102,9 @@ export type BudgetInput = BudgetFormData
 export type ExpenseInput = ExpenseFormData
 
 export type BudgetType = Pick<Budget, "budgetId" | "name">
+
+export type UserSession = {
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}

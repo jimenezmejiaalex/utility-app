@@ -1,13 +1,20 @@
-import { CategoryInput } from '@/interfaces';
+import { CategoryInput, UserSession } from '@/interfaces';
 import { CategoryDB } from '@/services/DBService';
 import { Category } from '@prisma/client';
 
 export class CategoryService {
-
-    async addCategory(category: CategoryInput): Promise<Category> {
+    async addCategory(category: CategoryInput, userSession: UserSession): Promise<Category> {
         try {
             const response = await CategoryDB.create({
-                data: category
+                data: {
+                    name: category.name,
+                    type: category.type,
+                    creator: {
+                        connect: {
+                            email: userSession.email
+                        }
+                    }
+                }
             });
 
             return response;
@@ -33,7 +40,7 @@ export class CategoryService {
         }
     }
 
-    async getCategories() {
+    async getCategories(userSession: UserSession) {
         try {
             const response = await CategoryDB.findMany({
                 select: {
@@ -41,6 +48,23 @@ export class CategoryService {
                     categoryId: true,
                     name: true,
                     type: true
+                },
+                where: {
+                    OR: [
+                        {
+                            creator: {
+                                email: userSession.email
+                            }
+                        }, {
+                            creator: {
+                                users: {
+                                    some: {
+                                        email: userSession.email
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 }
             });
 
@@ -124,11 +148,27 @@ export class CategoryService {
         }
     }
 
-    async getCategory(id: number) {
+    async getCategory(id: number, userSession: UserSession) {
         try {
             const response = await CategoryDB.findFirst({
                 where: {
-                    categoryId: id
+                    categoryId: id,
+                    OR: [
+                        {
+                            creator: {
+                                email: userSession.email
+                            }
+                        },
+                        {
+                            creator: {
+                                users: {
+                                    some: {
+                                        email: userSession.email
+                                    }
+                                }
+                            }
+                        }
+                    ]
                 },
                 select: {
                     id: true,

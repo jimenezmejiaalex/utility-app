@@ -1,6 +1,8 @@
 import { ExpenseInput } from '@/interfaces';
 import { ExpenseService } from '@/services/ExpenseService';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '../auth/[...nextauth]';
 
 const expenseService = new ExpenseService();
 
@@ -8,6 +10,7 @@ const handler = async (_req: NextApiRequest, res: NextApiResponse) => {
     const method = _req.method;
     const body = _req.body;
     const id = _req.query.id;
+    const session = await getServerSession(_req, res, authOptions);
     try {
         switch (method) {
             case "PATCH":
