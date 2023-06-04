@@ -17,6 +17,8 @@ const addCategory: React.FC<AddCategoryProps> = ({ types }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
 
+    console.log(session)
+
     if (status === 'loading') {
         return <LoadingComponent />
     }

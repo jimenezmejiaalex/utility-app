@@ -2,10 +2,13 @@ import AccountList from '@/components/AccountList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { BankAccountItem } from '@/interfaces'
-import { AccountService } from '@/services/AccountService'
-import { Box, IconButton } from '@chakra-ui/react'
+import Login from '@/pages/login'
+import { AccountService } from '@/services/server-services/AccountService'
+import { redirectToLogin } from '@/utils/Constants'
+import { Stack } from '@chakra-ui/layout'
+import { Box, IconButton, Text } from '@chakra-ui/react'
+import { getSession, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -16,6 +19,18 @@ type AccountProps = {
 const Account: React.FC<AccountProps> = ({ accounts }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [accountsState, setAccountsState] = useState(accounts)
+    const { data: session, status } = useSession()
+
+    console.log(session)
+
+    if (status === 'loading') {
+        return <LoadingComponent />
+    }
+
+    if (!session) {
+        return <Login />
+    }
+
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
         const response = await fetch(`/api/account/${id}`, {
@@ -28,15 +43,19 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
         ])
         setIsLoading(false)
     }
-    if (isLoading) {
-        return <LoadingComponent />
-    }
+
     return (
         <Layout title="Accounts">
-            <AccountList
-                onDeleteAction={onDeleteAction}
-                accounts={accountsState}
-            />
+            {accounts.length > 0 ? (
+                <AccountList
+                    onDeleteAction={onDeleteAction}
+                    accounts={accountsState}
+                />
+            ) : (
+                <Stack spacing={3}>
+                    <Text fontSize="lg">No Content</Text>
+                </Stack>
+            )}
             <Box
                 position="fixed"
                 bottom="80px"
@@ -58,9 +77,13 @@ const Account: React.FC<AccountProps> = ({ accounts }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const accountService = new AccountService()
-    const bankAccounts = await accountService.getBankAccounts()
+    const bankAccounts = await accountService.getBankAccounts(session.user)
     const accounts: Array<BankAccountItem> = bankAccounts.map((account) => ({
         name: account.name,
         accountId: account.accountId,
@@ -71,7 +94,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         props: {
             accounts,
         },
-        revalidate: 10,
     }
 }
 

@@ -2,10 +2,13 @@ import ExpenseList from '@/components/ExpenseList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { ExpenseItem } from '@/interfaces'
-import { ExpenseService } from '@/services/ExpenseService'
-import { Box, IconButton } from '@chakra-ui/react'
+import Login from '@/pages/login'
+import { ExpenseService } from '@/services/server-services/ExpenseService'
+import { redirectToLogin } from '@/utils/Constants'
+import { Stack } from '@chakra-ui/layout'
+import { Box, IconButton, Text } from '@chakra-ui/react'
+import { getSession, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -16,6 +19,16 @@ type ExpenseProps = {
 const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [expensesState, setExpensesState] = useState(expenses)
+
+    const { data: session, status } = useSession()
+
+    if (status === 'loading') {
+        return <LoadingComponent />
+    }
+
+    if (!session) {
+        return <Login />
+    }
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
         const response = await fetch(`/api/expense/${id}`, {
@@ -27,15 +40,19 @@ const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
         ])
         setIsLoading(false)
     }
-    if (isLoading) {
-        return <LoadingComponent />
-    }
+
     return (
         <Layout title="Expenses">
-            <ExpenseList
-                onDeleteAction={onDeleteAction}
-                expenses={expensesState}
-            />
+            {expensesState.length > 0 ? (
+                <ExpenseList
+                    onDeleteAction={onDeleteAction}
+                    expenses={expensesState}
+                />
+            ) : (
+                <Stack spacing={3}>
+                    <Text fontSize="lg">No Content</Text>
+                </Stack>
+            )}
             <Box
                 position="fixed"
                 bottom="80px"
@@ -57,9 +74,13 @@ const Budget: React.FC<ExpenseProps> = ({ expenses }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps<ExpenseProps> = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const expenseService = new ExpenseService()
-    const expenses = await expenseService.getExpenses()
+    const expenses = await expenseService.getExpenses(session.user)
     return {
         props: {
             expenses: expenses.map((expense) => ({
@@ -69,7 +90,6 @@ export const getStaticProps: GetStaticProps<ExpenseProps> = async (ctx) => {
                 amountNumber: expense.amount.toNumber(),
             })),
         },
-        revalidate: 10,
     }
 }
 

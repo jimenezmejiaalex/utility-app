@@ -3,13 +3,13 @@ import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { BudgetType, CategoryType, ExpenseFormData } from '@/interfaces'
 import Login from '@/pages/login'
-import { BudgetService } from '@/services/BudgetService'
-import { CategoryService } from '@/services/CategoryService'
-import { ExpenseService } from '@/services/ExpenseService'
+import { BudgetService } from '@/services/server-services/BudgetService'
+import { CategoryService } from '@/services/server-services/CategoryService'
+import { ExpenseService } from '@/services/server-services/ExpenseService'
+import { redirectToLogin } from '@/utils/Constants'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
-import { GetStaticPaths, GetStaticProps } from 'next'
-import { useSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import { getDate } from 'utils/DateUtils'
@@ -70,29 +70,23 @@ const Expense: React.FC<ExpenseProps> = ({
     )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-    const expenseService = new ExpenseService()
-    const expenses = await expenseService.getExpenses()
-    return {
-        paths: expenses.map((e) => ({
-            params: { id: e.expenseId.toString() },
-        })),
-        fallback: true,
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
     }
-}
-
-export const getStaticProps: GetStaticProps = async (ctx) => {
     const id = ctx.params?.id
 
     const budgetService = new BudgetService()
     const expenseService = new ExpenseService()
     const categoryService = new CategoryService()
 
-    const budgetList = await budgetService.getBudgets()
-    const categoryList = await categoryService.getCategories()
+    const budgetList = await budgetService.getBudgets(session.user)
+    const categoryList = await categoryService.getCategories(session.user)
 
     const expenseObj = await expenseService.getExpenseById(
-        parseInt(id.toString())
+        parseInt(id.toString()),
+        session.user
     )
 
     const expense: ExpenseFormData = {
@@ -131,7 +125,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             expense,
             categories,
         },
-        revalidate: 10,
     }
 }
 

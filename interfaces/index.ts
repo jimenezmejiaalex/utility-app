@@ -1,13 +1,11 @@
-// You can include shared interfaces/types in a separate file
-// and then use them in any component by importing them. For
-// example, to import the interface below do:
-//
-// import { User } from 'path/to/interfaces';
-
 import { BankAccount, Budget, Category, Currency, Expense, Type } from "@prisma/client"
 
+export type ShareWithUsersInput = {
+  usersForAccount: Array<SelectOptions>
+}
+
 export type User = {
-  id: number
+  id: string
   name: string
   email: string
 }
@@ -77,6 +75,10 @@ export type ExpenseFormData = {
   categories: Array<SelectOptions>
 }
 
+export type SettingsFormData = {
+  usersForAccount: Array<SelectOptions>
+}
+
 interface BudgetI extends Budget {
   amountNumber: number
 }
@@ -94,3 +96,9 @@ export type BudgetInput = BudgetFormData
 export type ExpenseInput = ExpenseFormData
 
 export type BudgetType = Pick<Budget, "budgetId" | "name">
+
+export type UserSession = {
+  name?: string | null
+  email?: string | null
+  image?: string | null
+}

@@ -15,6 +15,7 @@ import {
     useColorModeValue,
 } from '@chakra-ui/react'
 import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 import { FiBell, FiChevronDown, FiMenu } from 'react-icons/fi'
 
 interface MobileProps extends FlexProps {
@@ -102,7 +103,9 @@ export const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                             )}
                         >
                             <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
+                            <MenuItem>
+                                <Link href="/account/settings">Settings</Link>
+                            </MenuItem>
                             <MenuItem>Billing</MenuItem>
                             <MenuDivider />
                             <MenuItem onClick={handleSignOut}>

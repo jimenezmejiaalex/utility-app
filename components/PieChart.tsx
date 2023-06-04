@@ -1,7 +1,14 @@
 import { SelectedItem } from '@/interfaces'
 import { Button, Flex, FormControl, FormLabel, Input } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { ArcElement, Chart as ChartJS, Colors, Legend, Tooltip } from 'chart.js'
+import {
+    ArcElement,
+    Chart as ChartJS,
+    ChartOptions,
+    Colors,
+    Legend,
+    Tooltip,
+} from 'chart.js'
 import ChartDataLabels from 'chartjs-plugin-datalabels'
 import { useMemo, useState } from 'react'
 import { Pie } from 'react-chartjs-2'
@@ -58,6 +65,11 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
         return pieData.map(() => generateRandomColor())
     }, [pieData])
 
+    const sum = useMemo(
+        () => pieData.reduce((acc, v) => acc + parseFloat(v.value), 0),
+        [pieData]
+    )
+
     const data = {
         labels: pieData.map(
             (d) => `${d.name} (${getSymbol(Currency[currency])} ${d.value})`
@@ -70,7 +82,25 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
         ],
     }
 
-    const sum = pieData.reduce((acc, v) => acc + parseFloat(v.value), 0)
+    const options: ChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            datalabels: {
+                formatter(value) {
+                    return `${((parseFloat(value) / sum) * 100).toFixed(2)} %`
+                },
+                color: 'white',
+                labels: {
+                    title: {
+                        font: {
+                            weight: 'bold',
+                        },
+                    },
+                },
+            },
+        },
+    }
 
     return (
         <div>
@@ -135,33 +165,9 @@ const PieCartComponent = ({ budgets, setLoading, isLoading, currencies }) => {
                     Submit
                 </Button>
             </Flex>
-            {true && (
+            {pieData.length > 0 && (
                 <FormControl height="500px" pb={4}>
-                    <Pie
-                        data={data}
-                        options={{
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: {
-                                datalabels: {
-                                    formatter(value) {
-                                        return `${(
-                                            (parseFloat(value) / sum) *
-                                            100
-                                        ).toFixed(2)} %`
-                                    },
-                                    color: 'white',
-                                    labels: {
-                                        title: {
-                                            font: {
-                                                weight: 'bold',
-                                            },
-                                        },
-                                    },
-                                },
-                            },
-                        }}
-                    />
+                    <Pie data={data} options={options} />
                 </FormControl>
             )}
         </div>

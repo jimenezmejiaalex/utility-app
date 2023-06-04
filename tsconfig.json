@@ -30,6 +30,12 @@
       ],
       "@/services/*": [
         "services/*"
+      ],
+      "@/core/*": [
+        "core/*"
+      ],
+      "@/utils/*": [
+        "utils/*"
       ]
     },
     "incremental": true

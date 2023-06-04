@@ -3,12 +3,12 @@ import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { BankAccountType, BudgetFormData, CategoryType } from '@/interfaces'
 import Login from '@/pages/login'
-import { AccountService } from '@/services/AccountService'
-import { CategoryService } from '@/services/CategoryService'
+import { AccountService } from '@/services/server-services/AccountService'
+import { CategoryService } from '@/services/server-services/CategoryService'
+import { redirectToLogin } from '@/utils/Constants'
 import { Heading, Stack } from '@chakra-ui/layout'
 import { Currency } from '@prisma/client'
-import { GetStaticProps } from 'next'
-import { useSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import React, { useState } from 'react'
 
 type AddBudgetProps = {
@@ -64,11 +64,15 @@ const addBudget: React.FC<AddBudgetProps> = ({
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const accountService = new AccountService()
     const categoryService = new CategoryService()
-    const accountList = await accountService.getBankAccounts()
-    const categoryList = await categoryService.getCategories()
+    const accountList = await accountService.getBankAccounts(session.user)
+    const categoryList = await categoryService.getCategories(session.user)
 
     const accounts: Array<BankAccountType> =
         accountList.length === 0
@@ -93,7 +97,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             categories,
             currencies,
         },
-        revalidate: 10,
     }
 }
 
