@@ -1,9 +1,12 @@
-import { CategoryInput, UserSession } from '@/interfaces';
-import { CategoryDB } from '@/services/DBService';
-import { Category } from '@prisma/client';
+import { CategoryInput, UserSession } from '@/interfaces'
+import { CategoryDB } from '@/services/server-services/DBService'
+import { Category } from '@prisma/client'
 
 export class CategoryService {
-    async addCategory(category: CategoryInput, userSession: UserSession): Promise<Category> {
+    async addCategory(
+        category: CategoryInput,
+        userSession: UserSession
+    ): Promise<Category> {
         try {
             const response = await CategoryDB.create({
                 data: {
@@ -11,32 +14,35 @@ export class CategoryService {
                     type: category.type,
                     creator: {
                         connect: {
-                            email: userSession.email
-                        }
-                    }
-                }
-            });
+                            email: userSession.email,
+                        },
+                    },
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
-    async updateCategory(category: CategoryInput, id: number): Promise<Category> {
+    async updateCategory(
+        category: CategoryInput,
+        id: number
+    ): Promise<Category> {
         try {
             const response = await CategoryDB.update({
                 where: {
-                    categoryId: id
+                    categoryId: id,
                 },
-                data: category
-            });
+                data: category,
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
@@ -47,63 +53,70 @@ export class CategoryService {
                     id: true,
                     categoryId: true,
                     name: true,
-                    type: true
+                    type: true,
                 },
                 where: {
                     OR: [
                         {
                             creator: {
-                                email: userSession.email
-                            }
-                        }, {
+                                email: userSession.email,
+                            },
+                        },
+                        {
                             creator: {
                                 users: {
                                     some: {
-                                        email: userSession.email
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                }
-            });
+                                        email: userSession.email,
+                                    },
+                                },
+                            },
+                        },
+                    ],
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
-    async getCategoriesByIds(ids: Array<number>): Promise<Array<{ id: string }>> {
+    async getCategoriesByIds(
+        ids: Array<number>
+    ): Promise<Array<{ id: string }>> {
         try {
             const response = await CategoryDB.findMany({
                 where: {
                     categoryId: {
-                        in: ids
-                    }
+                        in: ids,
+                    },
                 },
                 select: {
                     id: true,
-                }
-            });
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
-    async getCategoriesByBudgetIdAndExpenseCreateAtRange(budgetId: number, from: string, to: string) {
+    async getCategoriesByBudgetIdAndExpenseCreateAtRange(
+        budgetId: number,
+        from: string,
+        to: string
+    ) {
         try {
             const response = await CategoryDB.findMany({
                 where: {
                     expenses: {
                         every: {
                             budget: {
-                                budgetId: budgetId
-                            }
+                                budgetId: budgetId,
+                            },
                             // AND: [
                             //     {
                             //         budget: {
@@ -117,8 +130,8 @@ export class CategoryService {
                             //         }
                             //     }
                             // ]
-                        }
-                    }
+                        },
+                    },
                 },
                 select: {
                     name: true,
@@ -133,18 +146,18 @@ export class CategoryService {
                                     budgetId: true,
                                     name: true,
                                     amount: true,
-                                    currency: true
-                                }
-                            }
-                        }
-                    }
-                }
-            });
+                                    currency: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
@@ -152,36 +165,42 @@ export class CategoryService {
         try {
             const response = await CategoryDB.findFirst({
                 where: {
-                    categoryId: id,
-                    OR: [
+                    AND: [
                         {
-                            creator: {
-                                email: userSession.email
-                            }
+                            categoryId: id,
                         },
                         {
-                            creator: {
-                                users: {
-                                    some: {
-                                        email: userSession.email
-                                    }
-                                }
-                            }
-                        }
-                    ]
+                            OR: [
+                                {
+                                    creator: {
+                                        email: userSession.email,
+                                    },
+                                },
+                                {
+                                    creator: {
+                                        users: {
+                                            some: {
+                                                email: userSession.email,
+                                            },
+                                        },
+                                    },
+                                },
+                            ],
+                        },
+                    ],
                 },
                 select: {
                     id: true,
                     categoryId: true,
                     name: true,
-                    type: true
-                }
-            });
+                    type: true,
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 
@@ -189,14 +208,14 @@ export class CategoryService {
         try {
             const response = await CategoryDB.delete({
                 where: {
-                    categoryId: id
-                }
-            });
+                    categoryId: id,
+                },
+            })
 
-            return response;
+            return response
         } catch (error) {
-            console.error(error);
-            return null;
+            console.error(error)
+            return null
         }
     }
 }

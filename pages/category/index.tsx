@@ -2,8 +2,10 @@ import CategoryList from '@/components/CategoryList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { CategoryItem } from '@/interfaces'
-import { CategoryService } from '@/services/CategoryService'
-import { Box, IconButton } from '@chakra-ui/react'
+import { CategoryService } from '@/services/server-services/CategoryService'
+import { redirectToLogin } from '@/utils/Constants'
+import { Stack } from '@chakra-ui/layout'
+import { Box, IconButton, Text } from '@chakra-ui/react'
 import { getSession, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import React, { useState } from 'react'
@@ -15,12 +17,10 @@ type CategoryProps = {
 }
 
 const Category: React.FC<CategoryProps> = ({ categories }) => {
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [_, setIsLoading] = useState<boolean>(false)
     const [categoriesState, setCategoriesState] = useState(categories)
 
     const { data: session, status } = useSession()
-
-    console.log(session)
 
     if (status === 'loading') {
         return <LoadingComponent />
@@ -36,18 +36,29 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
             method: 'DELETE',
         })
         const data = await response.json()
-        setCategoriesState([
-            ...categoriesState.filter((account) => account.categoryId !== id),
-        ])
+        if (data) {
+            setCategoriesState([
+                ...categoriesState.filter(
+                    (account) => account.categoryId !== id
+                ),
+            ])
+        }
+
         setIsLoading(false)
     }
 
     return (
         <Layout title="Categories">
-            <CategoryList
-                onDeleteAction={onDeleteAction}
-                categories={categoriesState}
-            />
+            {categories.length > 0 ? (
+                <CategoryList
+                    onDeleteAction={onDeleteAction}
+                    categories={categoriesState}
+                />
+            ) : (
+                <Stack spacing={3}>
+                    <Text fontSize="lg">No Content</Text>
+                </Stack>
+            )}
             <Box
                 position="fixed"
                 bottom="80px"
@@ -72,16 +83,11 @@ const Category: React.FC<CategoryProps> = ({ categories }) => {
 export const getServerSideProps = async (ctx) => {
     const session = await getSession(ctx)
     if (!session) {
-        return {
-            redirect: {
-                destination: '/login',
-            },
-        }
+        return redirectToLogin
     }
     const categoryService = new CategoryService()
     const categories = await categoryService.getCategories(session.user)
 
-    console.log(categories)
     return {
         props: {
             categories,

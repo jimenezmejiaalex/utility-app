@@ -3,13 +3,13 @@ import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { AccountFormData } from '@/interfaces'
 import Login from '@/pages/login'
-import { AccountService } from '@/services/AccountService'
-import { UserService } from '@/services/UserService'
+import { AccountService } from '@/services/server-services/AccountService'
+import { UserService } from '@/services/server-services/UserService'
+import { redirectToLogin } from '@/utils/Constants'
 import { Heading, Stack } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { useSession } from 'next-auth/react'
+import { getSession, useSession } from 'next-auth/react'
 import { useRouter } from 'next/router'
-import { GetStaticPaths, GetStaticProps } from 'next/types'
 import { useState } from 'react'
 
 const currency = [Currency.CRC, Currency.USD]
@@ -60,25 +60,19 @@ const Account = ({ users, account }) => {
     )
 }
 
-export const getStaticPaths: GetStaticPaths = async () => {
-    const accountService = new AccountService()
-    const accounts = await accountService.getBankAccounts()
-    return {
-        paths: accounts.map((c) => ({
-            params: { id: c.accountId.toString() },
-        })),
-        fallback: true,
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
     }
-}
-
-export const getStaticProps: GetStaticProps = async (ctx) => {
     const id = ctx.params.id
 
     const userService = new UserService()
     const accountService = new AccountService()
-    const users = await userService.getUsers()
+    const users = await userService.getUsers(session.user, true)
     const account = await accountService.getBankAccountById(
-        parseInt(id.toString())
+        parseInt(id.toString()),
+        session.user
     )
     const accountProp: AccountFormData = {
         name: account.name,
@@ -92,7 +86,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
             users,
             account: accountProp,
         },
-        revalidate: 10,
     }
 }
 

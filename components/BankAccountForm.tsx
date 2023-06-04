@@ -97,7 +97,7 @@ const BankAccountForm: React.FC<BankAccountFormProps> = ({
                         isLoading={isLoading}
                         onChange={handleUserChange}
                         data={users.map((user) => ({
-                            label: user.name,
+                            label: `${user.name} - (${user.email})`,
                             value: user.email,
                         }))}
                         title="User"

@@ -1,11 +1,11 @@
 import SidebarWithHeader from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import PieCartComponent from '@/components/PieChart'
-import { BudgetService } from '@/services/BudgetService'
+import { BudgetService } from '@/services/server-services/BudgetService'
+import { redirectToLogin } from '@/utils/Constants'
 import { Box, Heading, Spinner } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { useSession } from 'next-auth/react'
-import { GetStaticProps } from 'next/types'
+import { getSession, useSession } from 'next-auth/react'
 import { useState } from 'react'
 import Login from './login'
 
@@ -61,11 +61,14 @@ const IndexPage = ({ budgets, currencies }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const budgetService = new BudgetService()
-
     const currencies = [Currency.CRC, Currency.USD]
-    const budgets = await budgetService.getBudgets()
+    const budgets = await budgetService.getBudgets(session.user)
     return {
         props: {
             currencies,

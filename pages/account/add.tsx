@@ -3,16 +3,14 @@ import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { AccountFormData } from '@/interfaces'
 import Login from '@/pages/login'
-import { UserService } from '@/services/UserService'
+import { UserService } from '@/services/server-services/UserService'
+import { redirectToLogin } from '@/utils/Constants'
 import { Heading, Stack } from '@chakra-ui/react'
 import { Currency } from '@prisma/client'
-import { useSession } from 'next-auth/react'
-import { GetStaticProps } from 'next/types'
+import { getSession, useSession } from 'next-auth/react'
 import { useState } from 'react'
 
-const currency = [Currency.CRC, Currency.USD]
-
-const Account = ({ users }) => {
+const Account = ({ users, currencies }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const { data: session, status } = useSession()
 
@@ -45,7 +43,7 @@ const Account = ({ users }) => {
                     <BankAccountForm
                         isLoading={isLoading}
                         users={users}
-                        currencies={currency}
+                        currencies={currencies}
                         onSubmit={handleOnSubmit}
                     />
                 </Stack>
@@ -54,14 +52,20 @@ const Account = ({ users }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const userService = new UserService()
-    const users = await userService.getUsers()
+    const users = await userService.getUsers(session.user, true)
+
+    const currencies = [Currency.CRC, Currency.USD]
     return {
         props: {
             users,
+            currencies,
         },
-        revalidate: 10,
     }
 }
 

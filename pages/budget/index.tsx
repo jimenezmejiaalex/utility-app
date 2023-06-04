@@ -2,10 +2,13 @@ import BudgetList from '@/components/BudgetList'
 import Layout from '@/components/Layout'
 import LoadingComponent from '@/components/Loading'
 import { BudgetItem } from '@/interfaces'
-import { BudgetService } from '@/services/BudgetService'
-import { Box, IconButton } from '@chakra-ui/react'
+import Login from '@/pages/login'
+import { BudgetService } from '@/services/server-services/BudgetService'
+import { redirectToLogin } from '@/utils/Constants'
+import { Stack } from '@chakra-ui/layout'
+import { Box, IconButton, Text } from '@chakra-ui/react'
+import { getSession, useSession } from 'next-auth/react'
 import Link from 'next/link'
-import { GetStaticProps } from 'next/types'
 import React, { useState } from 'react'
 import { AiOutlinePlus } from 'react-icons/ai'
 
@@ -16,6 +19,7 @@ type BudgetProps = {
 const Budget: React.FC<BudgetProps> = ({ budgets }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [budgetsState, setBudgetsState] = useState(budgets)
+    const { data: session, status } = useSession()
     const onDeleteAction = async (id: number) => {
         setIsLoading(true)
         const response = await fetch(`/api/budget/${id}`, {
@@ -28,15 +32,27 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
         ])
         setIsLoading(false)
     }
-    if (isLoading) {
+
+    if (status === 'loading') {
         return <LoadingComponent />
+    }
+
+    if (!session) {
+        return <Login />
     }
     return (
         <Layout title="Budgets">
-            <BudgetList
-                onDeleteAction={onDeleteAction}
-                budgets={budgetsState}
-            />
+            {budgetsState.length > 0 ? (
+                <BudgetList
+                    onDeleteAction={onDeleteAction}
+                    budgets={budgetsState}
+                />
+            ) : (
+                <Stack spacing={3}>
+                    <Text fontSize="lg">No Content</Text>
+                </Stack>
+            )}
+
             <Box
                 position="fixed"
                 bottom="80px"
@@ -58,9 +74,13 @@ const Budget: React.FC<BudgetProps> = ({ budgets }) => {
     )
 }
 
-export const getStaticProps: GetStaticProps = async (ctx) => {
+export const getServerSideProps = async (ctx) => {
+    const session = await getSession(ctx)
+    if (!session) {
+        return redirectToLogin
+    }
     const budgetService = new BudgetService()
-    const budgets = await budgetService.getBudgets()
+    const budgets = await budgetService.getBudgets(session.user)
     return {
         props: {
             budgets: budgets.map((budget) => ({
@@ -70,7 +90,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
                 amountNumber: budget.amount.toNumber(),
             })),
         },
-        revalidate: 10,
     }
 }
 
